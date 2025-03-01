@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/godotui_essentials/scripts/gui_button.gd" id="1_yvxnm"]
+
+[node name="GUIButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Button"
+script = ExtResource("1_yvxnm") 

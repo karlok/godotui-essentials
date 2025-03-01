@@ -1,0 +1,103 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://addons/godotui_essentials/art/panel_background.svg" id="1_yvxnm"]
+[ext_resource type="Texture2D" path="res://addons/godotui_essentials/art/character_silhouette.svg" id="2_yvxnm"]
+[ext_resource type="Texture2D" path="res://addons/godotui_essentials/art/game_icons.svg" id="3_yvxnm"]
+[ext_resource type="PackedScene" path="res://addons/godotui_essentials/components/gui_panel.tscn" id="4_yvxnm"]
+
+[node name="PlaceholderArtExample" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_yvxnm")
+stretch_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Placeholder Art Examples"
+horizontal_alignment = 1
+
+[node name="GUIPanel" parent="CenterContainer/VBoxContainer" instance=ExtResource("4_yvxnm")]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/GUIPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer"]
+layout_mode = 2
+text = "Character Silhouette"
+horizontal_alignment = 1
+
+[node name="CharacterSilhouette" type="TextureRect" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_yvxnm")
+
+[node name="Label2" type="Label" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer"]
+layout_mode = 2
+text = "Game Icons"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PlayIcon" type="TextureRect" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yvxnm")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 64)
+
+[node name="PauseIcon" type="TextureRect" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yvxnm")
+region_enabled = true
+region_rect = Rect2(64, 0, 64, 64)
+
+[node name="SettingsIcon" type="TextureRect" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yvxnm")
+region_enabled = true
+region_rect = Rect2(128, 0, 64, 64)
+
+[node name="ExitIcon" type="TextureRect" parent="CenterContainer/VBoxContainer/GUIPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_yvxnm")
+region_enabled = true
+region_rect = Rect2(192, 0, 64, 64) 

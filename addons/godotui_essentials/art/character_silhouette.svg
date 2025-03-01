@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <circle cx="32" cy="16" r="12" fill="#333333"/>
+  
+  <!-- Body -->
+  <path d="M20 28H44V48C44 52.4183 40.4183 56 36 56H28C23.5817 56 20 52.4183 20 48V28Z" fill="#444444"/>
+  
+  <!-- Arms -->
+  <rect x="12" y="28" width="8" height="20" rx="4" fill="#444444"/>
+  <rect x="44" y="28" width="8" height="20" rx="4" fill="#444444"/>
+  
+  <!-- Legs -->
+  <rect x="24" y="48" width="8" height="16" rx="4" fill="#333333"/>
+  <rect x="32" y="48" width="8" height="16" rx="4" fill="#333333"/>
+</svg> 

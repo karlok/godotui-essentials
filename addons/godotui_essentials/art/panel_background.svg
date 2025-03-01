@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main panel background -->
+  <rect x="2" y="2" width="96" height="96" rx="8" fill="#2A3A4A" stroke="#3D5A7A" stroke-width="2"/>
+  
+  <!-- Top highlight -->
+  <rect x="4" y="4" width="92" height="4" rx="2" fill="#4D6A8A" fill-opacity="0.6"/>
+  
+  <!-- Bottom shadow -->
+  <rect x="4" y="92" width="92" height="4" rx="2" fill="#1A2A3A" fill-opacity="0.6"/>
+  
+  <!-- Left highlight -->
+  <rect x="4" y="8" width="4" height="84" rx="2" fill="#4D6A8A" fill-opacity="0.4"/>
+  
+  <!-- Right shadow -->
+  <rect x="92" y="8" width="4" height="84" rx="2" fill="#1A2A3A" fill-opacity="0.4"/>
+</svg> 
