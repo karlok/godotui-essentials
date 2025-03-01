@@ -14,7 +14,7 @@ A simple, lightweight add-on for Godot 4.3+ that provides ready-to-use UI compon
 
 ## Installation
 
-1. Download the latest release from the [releases page](https://github.com/yourusername/godotui-essentials/releases)
+1. Download the latest release from the [releases page](https://github.com/karlok/godotui-essentials/releases)
 2. Extract the ZIP file
 3. Copy the `addons/godotui_essentials` folder to your Godot project's `addons` folder
 4. Enable the plugin in Godot: Project → Project Settings → Plugins → GodotUI Essentials
