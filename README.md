@@ -1,6 +1,6 @@
 # GodotUI Essentials
 
-A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides ready-to-use UI components and placeholder art for 2D game development.
+A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides ready-to-use UI components and placeholder art for 2D game development. (Briefly tested with Godot 4.4, and it seems to work; made some changes to eliminate some warnings, etc. Documentation is updated accordingly.)
 
 ## Features
 
