@@ -101,7 +101,6 @@ func create_type_on_example_ui():
 	
 	_punctuation_checkbox = CheckBox.new()
 	_punctuation_checkbox.text = "Pause at Punctuation"
-	_punctuation_checkbox.pressed = true
 	checkbox_vbox.add_child(_punctuation_checkbox)
 	
 	# Add another separator
