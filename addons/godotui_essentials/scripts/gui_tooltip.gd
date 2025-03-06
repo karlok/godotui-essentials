@@ -75,9 +75,21 @@ func _setup_tooltip() -> void:
 	# Set up the control properties
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
+	# Handle anchors and size/position to avoid warnings
+	# Store current values
+	var current_size = size
+	var current_position = position
+	
+	# If we have non-equal opposite anchors, use set_deferred for size and position
+	if anchor_right != anchor_left or anchor_bottom != anchor_top:
+		set_deferred("size", current_size)
+		set_deferred("position", current_position)
+	
 	# Create the panel background
 	_panel = Panel.new()
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel.set_deferred("size", size)  # Use set_deferred for the panel too
+	_panel.set_deferred("position", Vector2.ZERO)
 	add_child(_panel)
 	
 	# Create a stylebox for the panel

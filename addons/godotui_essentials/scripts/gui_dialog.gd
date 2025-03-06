@@ -87,14 +87,28 @@ func _setup_dialog() -> void:
 	size_flags_horizontal = SIZE_SHRINK_CENTER
 	size_flags_vertical = SIZE_SHRINK_CENTER
 	
+	# Handle anchors and size/position to avoid warnings
+	# Store current values
+	var current_size = size
+	var current_position = position
+	
+	# If we have non-equal opposite anchors, use set_deferred for size and position
+	if anchor_right != anchor_left or anchor_bottom != anchor_top:
+		set_deferred("size", current_size)
+		set_deferred("position", current_position)
+	
 	# Create the panel background
 	_panel = Panel.new()
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel.set_deferred("size", size)
+	_panel.set_deferred("position", Vector2.ZERO)
 	add_child(_panel)
 	
 	# Create a VBox for the content
 	var vbox = VBoxContainer.new()
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.set_deferred("size", _panel.size)
+	vbox.set_deferred("position", Vector2.ZERO)
 	vbox.add_theme_constant_override("separation", 10)
 	_panel.add_child(vbox)
 	
@@ -156,6 +170,8 @@ func _setup_dialog() -> void:
 		modal_bg.name = "ModalBackground"
 		modal_bg.color = Color(0, 0, 0, 0.5)
 		modal_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+		modal_bg.set_deferred("size", size)
+		modal_bg.set_deferred("position", Vector2.ZERO)
 		modal_bg.mouse_filter = Control.MOUSE_FILTER_STOP
 		
 		# Add the modal background before the dialog

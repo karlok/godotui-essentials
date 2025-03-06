@@ -765,6 +765,15 @@ func _ready():
 - **Issue**: You get errors like "Invalid get index 'BUTTON_SCENE' on base 'GDScriptNativeClass'".
 - **Solution**: Make sure you're accessing GUIPaths after the plugin is initialized. If you're using it in an autoload script, make sure your autoload has a higher priority than GUIPaths.
 
+#### "Non-equal opposite anchors" Warning
+- **Issue**: You see warnings like "Nodes with non-equal opposite anchors will have their size overridden after _ready()".
+- **Solution**: This is a common Godot warning when working with anchored controls. The components have been updated to handle this internally, but if you're creating your own UI elements:
+  1. Use `GUIResponsiveSingleton.set_safe_size(control, size)` and `GUIResponsiveSingleton.set_safe_position(control, position)` when setting size/position on controls with anchors
+  2. Or use `control.set_deferred("size", size)` and `control.set_deferred("position", position)` directly
+  3. When possible, use layout containers (VBoxContainer, HBoxContainer, etc.) instead of manually setting sizes
+  
+  **Note about editor warnings**: You might still see this warning when adding components in the editor. This is normal and won't affect runtime behavior. The warning appears because the editor is detecting that you're resizing a control that has non-equal anchors. You can safely ignore these warnings when working in the editor.
+
 #### Responsive Design Not Working
 - **Issue**: UI elements don't adapt to different screen sizes.
 - **Solution**: Ensure you've set `use_responsive_sizing = true` on your components and that you're connecting to the window's `size_changed` signal to update your layout.

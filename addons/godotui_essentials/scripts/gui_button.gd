@@ -40,6 +40,16 @@ func _ready():
 	_original_scale = scale
 	_original_modulate = modulate
 	
+	# Handle anchors and size/position to avoid warnings
+	# Store current values
+	var current_size = size
+	var current_position = position
+	
+	# If we have non-equal opposite anchors, use set_deferred for size and position
+	if anchor_right != anchor_left or anchor_bottom != anchor_top:
+		set_deferred("size", current_size)
+		set_deferred("position", current_position)
+	
 	# Connect signals
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
