@@ -15,7 +15,7 @@ GodotUI Essentials is designed for Godot 4.3+ and takes advantage of the latest 
 
 | GodotUI Version | Compatible Godot Versions | Notes |
 |-----------------|---------------------------|-------|
-| 1.0.0           | 4.3+                     | Initial release |
+| 1.0.1           | 4.3+                     | Initial release |
 
 #### Compatibility Notes:
 - This add-on will **not** work with Godot 3.x
