@@ -793,3 +793,34 @@ If you encounter issues not covered in this documentation:
 1. Check the [GitHub repository](https://github.com/yourusername/godotui-essentials/issues) for known issues
 2. Join our [Discord community](https://discord.gg/yourdiscord) for real-time help
 3. Submit a detailed bug report if you've found a new issue 
+
+## GUIResponsive
+
+The `GUIResponsive` singleton provides utilities for creating responsive UI elements that adapt to different screen sizes.
+
+### Methods
+
+- `get_scale_factor()`: Returns a scale factor based on the current viewport size
+- `get_screen_size_category()`: Returns the current screen size category (SMALL, MEDIUM, LARGE, XLARGE)
+- `get_font_size(type)`: Returns a font size appropriate for the current screen size
+- `apply_font_size(node, type)`: Applies a responsive font size to a Control node
+- `get_min_size(component)`: Returns a minimum size appropriate for the current screen size
+- `get_width_percent(percent)`: Returns a width based on a percentage of the viewport width
+- `get_height_percent(percent)`: Returns a height based on a percentage of the viewport height
+- `set_safe_size(control, size)`: Safely sets the size of a Control node using set_deferred to avoid warnings with anchored controls
+
+### Usage Example
+
+```gdscript
+# Create a responsive panel
+var panel = GUIPanel.new()
+panel.custom_minimum_size = GUIResponsive.get_min_size("panel")
+
+# Set size safely (especially important when using anchors)
+GUIResponsive.set_safe_size(panel, Vector2(300, 200))
+
+# Apply responsive font size
+var label = Label.new()
+GUIResponsive.apply_font_size(label, "body")
+panel.add_child(label)
+```

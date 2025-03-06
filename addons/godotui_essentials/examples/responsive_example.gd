@@ -8,7 +8,7 @@ func _ready():
 	var info_panel = Panel.new()
 	info_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	info_panel.position = Vector2(-250, 10)
-	info_panel.size = Vector2(240, 100)
+	info_panel.set_deferred("size", Vector2(240, 100))
 	add_child(info_panel)
 	
 	var info_container = VBoxContainer.new()

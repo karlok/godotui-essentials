@@ -222,7 +222,7 @@ func _update_panel_style() -> void:
 			panel_content.name = "PanelContent"
 			panel_content.set_anchors_preset(Control.PRESET_FULL_RECT)
 			panel_content.position = Vector2.ZERO
-			panel_content.size = size
+			panel_content.set_deferred("size", size)
 			panel_content.add_theme_stylebox_override("panel", _panel_stylebox)
 			add_child(panel_content)
 			
