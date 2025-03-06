@@ -21,7 +21,7 @@ func create_type_on_example_ui():
 	add_child(center)
 	
 	# Create a panel for our content
-	var panel = preload(GodotUIPaths.PANEL_SCENE).instantiate()
+	var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
 	panel.custom_minimum_size = Vector2(600, 500)
 	center.add_child(panel)
 	

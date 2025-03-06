@@ -1,6 +1,6 @@
 @tool
 extends Node
-class_name GodotUIPaths
+class_name GUIPaths
 
 ## Global singleton for accessing paths to GodotUI Essentials components
 

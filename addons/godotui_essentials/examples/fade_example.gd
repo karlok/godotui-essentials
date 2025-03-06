@@ -57,7 +57,7 @@ func add_button_example(parent):
 	parent.add_child(container)
 	
 	# Create a button with fade animations
-	var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+	var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 	button.text = "Fade Button"
 	button.use_fade_animations = true
 	button.fade_in_duration = 0.5
@@ -88,7 +88,7 @@ func add_panel_example(parent):
 	parent.add_child(container)
 	
 	# Create a panel with fade animations
-	var panel = preload(GodotUIPaths.PANEL_SCENE).instantiate()
+	var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
 	panel.custom_minimum_size = Vector2(200, 100)
 	panel.use_fade_animations = true
 	panel.fade_in_duration = 0.5
@@ -136,7 +136,7 @@ func add_dialog_example(parent):
 	container.add_child(show_dialog_button)
 	
 	# Create the dialog
-	var dialog = preload(GodotUIPaths.DIALOG_SCENE).instantiate()
+	var dialog = preload(GUIPaths.DIALOG_SCENE).instantiate()
 	dialog.title = "Fade Dialog Example"
 	dialog.message = "This dialog uses fade-in and fade-out animations."
 	dialog.use_fade_animations = true
@@ -173,7 +173,7 @@ func add_tooltip_example(parent):
 	hover_panel.add_child(panel_label)
 	
 	# Create a tooltip with fade animations
-	var tooltip = preload(GodotUIPaths.TOOLTIP_SCENE).instantiate()
+	var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
 	tooltip.text = "This tooltip uses fade-in and fade-out animations"
 	tooltip.use_fade_animations = true
 	tooltip.fade_in_duration = 0.3

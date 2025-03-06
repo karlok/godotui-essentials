@@ -33,8 +33,8 @@ Once the plugin is enabled, you can use GodotUI Essentials in your project in se
 
 2. **Instantiating Components via Code**:
    ```gdscript
-   # Using GodotUIPaths singleton (recommended)
-   var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+   # Using GUIPaths singleton (recommended)
+   var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
    button.text = "Click Me"
    add_child(button)
    
@@ -45,7 +45,7 @@ Once the plugin is enabled, you can use GodotUI Essentials in your project in se
 
 3. **Accessing Utility Classes**:
    The plugin registers several autoload singletons for convenience:
-   - `GodotUIPaths`: Path references to all components and scripts
+   - `GUIPaths`: Path references to all components and scripts
    - `GUIResponsive`: Responsive design utilities
    - `GUIFadeAnimation`: Fade animation utilities
    - `GUITypeOnEffect`: Type-on text effect utilities (instantiate as needed)
@@ -359,9 +359,9 @@ tween.tween_property(my_control, "scale", Vector2(0.9, 0.9), 0.3)
 
 See the `fade_example.tscn` in the examples folder for a complete demonstration of fade animation capabilities.
 
-## Using GodotUIPaths for References
+## Using GUIPaths for References
 
-The add-on includes a global singleton called `GodotUIPaths` that provides easy access to component paths without hard-coding them. This makes your code more maintainable and less prone to errors when files are moved.
+The add-on includes a global singleton called `GUIPaths` that provides easy access to component paths without hard-coding them. This makes your code more maintainable and less prone to errors when files are moved.
 
 ### Accessing Component Scenes
 
@@ -369,11 +369,11 @@ The add-on includes a global singleton called `GodotUIPaths` that provides easy 
 # Instead of hard-coding paths like this:
 var button = preload("res://addons/godotui_essentials/components/gui_button.tscn").instantiate()
 
-# Use GodotUIPaths like this:
-var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+# Use GUIPaths like this:
+var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 
 # Or use the helper function:
-var button = preload(GodotUIPaths.get_component_scene("Button")).instantiate()
+var button = preload(GUIPaths.get_component_scene("Button")).instantiate()
 ```
 
 ### Accessing Component Scripts
@@ -382,11 +382,11 @@ var button = preload(GodotUIPaths.get_component_scene("Button")).instantiate()
 # Instead of hard-coding paths like this:
 var script = preload("res://addons/godotui_essentials/scripts/gui_button.gd")
 
-# Use GodotUIPaths like this:
-var script = preload(GodotUIPaths.BUTTON_SCRIPT)
+# Use GUIPaths like this:
+var script = preload(GUIPaths.BUTTON_SCRIPT)
 
 # Or use the helper function:
-var script = preload(GodotUIPaths.get_component_script("Button"))
+var script = preload(GUIPaths.get_component_script("Button"))
 ```
 
 ### Accessing Art Assets
@@ -395,11 +395,11 @@ var script = preload(GodotUIPaths.get_component_script("Button"))
 # Instead of hard-coding paths like this:
 var icon = preload("res://addons/godotui_essentials/art/button_icon.svg")
 
-# Use GodotUIPaths like this:
-var icon = preload(GodotUIPaths.BUTTON_ICON)
+# Use GUIPaths like this:
+var icon = preload(GUIPaths.BUTTON_ICON)
 
 # Or use the helper function:
-var icon = preload(GodotUIPaths.get_component_icon("Button"))
+var icon = preload(GUIPaths.get_component_icon("Button"))
 ```
 
 ### Available Constants
@@ -523,7 +523,7 @@ You can create a container that automatically updates its children when the view
 var container = GUIResponsive.create_responsive_container(parent_node)
 
 # Add your UI elements to this container
-var my_button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+var my_button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 container.add_child(my_button)
 ```
 
@@ -700,7 +700,7 @@ The `GUITypeOnEffect` class emits the following signals:
 
 ```gdscript
 # Create a dialog with typing effect
-var dialog = preload(GodotUIPaths.DIALOG_SCENE).instantiate()
+var dialog = preload(GUIPaths.DIALOG_SCENE).instantiate()
 dialog.title = "Message"
 dialog.message = "This important message will be typed out character by character."
 add_child(dialog)
@@ -761,9 +761,9 @@ func _ready():
 - **Issue**: After installing the plugin, you don't see GUIButton, GUIPanel, etc. in the Add Node dialog.
 - **Solution**: Make sure the plugin is enabled in Project Settings → Plugins. If it's enabled but still not working, try restarting the editor.
 
-#### Path Errors When Using GodotUIPaths
+#### Path Errors When Using GUIPaths
 - **Issue**: You get errors like "Invalid get index 'BUTTON_SCENE' on base 'GDScriptNativeClass'".
-- **Solution**: Make sure you're accessing GodotUIPaths after the plugin is initialized. If you're using it in an autoload script, make sure your autoload has a higher priority than GodotUIPaths.
+- **Solution**: Make sure you're accessing GUIPaths after the plugin is initialized. If you're using it in an autoload script, make sure your autoload has a higher priority than GUIPaths.
 
 #### Responsive Design Not Working
 - **Issue**: UI elements don't adapt to different screen sizes.
@@ -775,8 +775,8 @@ func _ready():
 
 ### Best Practices
 
-1. **Use GodotUIPaths for References**:
-   Always use the GodotUIPaths singleton to reference components and scripts instead of hard-coding paths.
+1. **Use GUIPaths for References**:
+   Always use the GUIPaths singleton to reference components and scripts instead of hard-coding paths.
 
 2. **Responsive Design**:
    Connect to the window's `size_changed` signal to update your UI when the screen size changes.

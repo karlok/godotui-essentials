@@ -122,7 +122,7 @@ func create_responsive_ui():
 		GUIResponsive.apply_font_size(panel_label, "normal")
 		panel_container.add_child(panel_label)
 		
-		var panel = preload(GodotUIPaths.PANEL_SCENE).instantiate()
+		var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
 		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		panel.custom_minimum_size = Vector2(100, 80)
@@ -165,13 +165,13 @@ func create_responsive_ui():
 		GUIResponsive.apply_font_size(panel_label, "normal")
 		panel_container.add_child(panel_label)
 		
-		var panel = preload(GodotUIPaths.PANEL_SCENE).instantiate()
+		var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
 		panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		panel.custom_minimum_size = Vector2(GUIResponsive.get_width_percent(percent) * 0.8, 80)
 		panel_container.add_child(panel)
 	
 	# Add a button to show a dialog
-	var dialog_button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+	var dialog_button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 	dialog_button.text = "Show Responsive Dialog"
 	dialog_button.pressed.connect(func(): show_responsive_dialog())
 	vbox.add_child(dialog_button)
@@ -184,12 +184,12 @@ func add_component_row(grid, button_text, size_category):
 	grid.add_child(label)
 	
 	# Add a button
-	var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+	var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 	button.text = button_text
 	button.font_size_category = size_category
 	
 	# Add a tooltip to the button
-	var tooltip = preload(GodotUIPaths.TOOLTIP_SCENE).instantiate()
+	var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
 	tooltip.text = "This is a " + size_category + " tooltip"
 	tooltip.font_size_category = size_category
 	add_child(tooltip)
@@ -198,7 +198,7 @@ func add_component_row(grid, button_text, size_category):
 	grid.add_child(button)
 
 func show_responsive_dialog():
-	var dialog = preload(GodotUIPaths.DIALOG_SCENE).instantiate()
+	var dialog = preload(GUIPaths.DIALOG_SCENE).instantiate()
 	dialog.title = "Viewport-Based Responsive Dialog"
 	dialog.message = "This dialog adapts smoothly to the viewport dimensions.\nTry resizing the window to see how it changes continuously."
 	dialog.title_size_category = "large"

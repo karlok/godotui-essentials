@@ -50,8 +50,8 @@ All components include built-in responsive capabilities that:
 ## Usage Examples
 
 ```gdscript
-# Example: Creating a dialog programmatically using GodotUIPaths
-var dialog = preload(GodotUIPaths.DIALOG_SCENE).instantiate()
+# Example: Creating a dialog programmatically using GUIPaths
+var dialog = preload(GUIPaths.DIALOG_SCENE).instantiate()
 dialog.title = "Game Over"
 dialog.message = "Try again?"
 dialog.add_button("Restart", "restart_game")
@@ -59,7 +59,7 @@ dialog.add_button("Quit", "quit_game")
 add_child(dialog)
 
 # Example: Creating a responsive tooltip
-var tooltip = preload(GodotUIPaths.TOOLTIP_SCENE).instantiate()
+var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
 tooltip.text = "This tooltip scales with the viewport"
 tooltip.use_responsive_sizing = true
 tooltip.font_size_category = "normal"
@@ -67,7 +67,7 @@ add_child(tooltip)
 tooltip.attach_to($MyButton)
 
 # Example: Using fade animations
-var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 button.text = "Fade Button"
 button.use_fade_animations = true
 button.fade_in_duration = 0.5
@@ -87,7 +87,7 @@ type_on_effect.start_typing()
 # Example: Using viewport-based sizing
 func _ready():
     # Create a panel that's 50% of viewport width
-    var panel = preload(GodotUIPaths.PANEL_SCENE).instantiate()
+    var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
     panel.custom_minimum_size.x = GUIResponsive.get_width_percent(50)
     add_child(panel)
     
@@ -106,17 +106,17 @@ func _ready():
 
 ## Path Management
 
-The add-on includes a global singleton called `GodotUIPaths` that provides easy access to component paths without hard-coding them:
+The add-on includes a global singleton called `GUIPaths` that provides easy access to component paths without hard-coding them:
 
 ```gdscript
 # Instead of hard-coding paths:
 var button = preload("res://addons/godotui_essentials/components/gui_button.tscn").instantiate()
 
-# Use GodotUIPaths:
-var button = preload(GodotUIPaths.BUTTON_SCENE).instantiate()
+# Use GUIPaths:
+var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 ```
 
-See the documentation for more details on using the `GodotUIPaths` singleton.
+See the documentation for more details on using the `GUIPaths` singleton.
 
 ## Customization
 
