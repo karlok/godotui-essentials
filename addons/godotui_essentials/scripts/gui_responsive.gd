@@ -257,4 +257,9 @@ static func get_screen_size_category() -> ScreenSize:
 ## Safely set the size of a Control node to avoid warnings with anchored controls
 static func set_safe_size(control: Control, size: Vector2) -> void:
 	if control:
-		control.set_deferred("size", size) 
+		control.set_deferred("size", size)
+
+## Safely set the position of a Control node to avoid warnings with anchored controls
+static func set_safe_position(control: Control, position: Vector2) -> void:
+	if control:
+		control.set_deferred("position", position) 

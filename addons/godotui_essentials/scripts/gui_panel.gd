@@ -221,7 +221,7 @@ func _update_panel_style() -> void:
 			var panel_content = Panel.new()
 			panel_content.name = "PanelContent"
 			panel_content.set_anchors_preset(Control.PRESET_FULL_RECT)
-			panel_content.position = Vector2.ZERO
+			panel_content.set_deferred("position", Vector2.ZERO)
 			panel_content.set_deferred("size", size)
 			panel_content.add_theme_stylebox_override("panel", _panel_stylebox)
 			add_child(panel_content)
@@ -235,7 +235,7 @@ func _update_panel_style() -> void:
 					child.owner = panel_content
 			
 			# Apply the shadow offset
-			panel_content.position = -shadow_offset
+			panel_content.set_deferred("position", -shadow_offset)
 	else:
 		# If we previously had a shadow but now don't
 		if has_node("PanelContent"):

@@ -808,6 +808,7 @@ The `GUIResponsive` singleton provides utilities for creating responsive UI elem
 - `get_width_percent(percent)`: Returns a width based on a percentage of the viewport width
 - `get_height_percent(percent)`: Returns a height based on a percentage of the viewport height
 - `set_safe_size(control, size)`: Safely sets the size of a Control node using set_deferred to avoid warnings with anchored controls
+- `set_safe_position(control, position)`: Safely sets the position of a Control node using set_deferred to avoid warnings with anchored controls
 
 ### Usage Example
 
@@ -816,8 +817,9 @@ The `GUIResponsive` singleton provides utilities for creating responsive UI elem
 var panel = GUIPanel.new()
 panel.custom_minimum_size = GUIResponsive.get_min_size("panel")
 
-# Set size safely (especially important when using anchors)
+# Set size and position safely (especially important when using anchors)
 GUIResponsive.set_safe_size(panel, Vector2(300, 200))
+GUIResponsive.set_safe_position(panel, Vector2(50, 50))
 
 # Apply responsive font size
 var label = Label.new()
