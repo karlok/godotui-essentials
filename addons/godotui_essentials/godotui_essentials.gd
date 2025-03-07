@@ -15,7 +15,6 @@ func _enter_tree() -> void:
 	add_custom_type("GUIButton", "Button", preload("res://addons/godotui_essentials/scripts/gui_button.gd"), preload("res://addons/godotui_essentials/art/button_icon.svg"))
 	add_custom_type("GUIPanel", "Panel", preload("res://addons/godotui_essentials/scripts/gui_panel.gd"), preload("res://addons/godotui_essentials/art/panel_icon.svg"))
 	add_custom_type("GUIDialog", "Control", preload("res://addons/godotui_essentials/scripts/gui_dialog.gd"), preload("res://addons/godotui_essentials/art/dialog_icon.svg"))
-	add_custom_type("GUITooltip", "Control", preload("res://addons/godotui_essentials/scripts/gui_tooltip.gd"), preload("res://addons/godotui_essentials/art/tooltip_icon.svg"))
 
 func _exit_tree() -> void:
 	# Remove autoload singletons
@@ -27,5 +26,4 @@ func _exit_tree() -> void:
 	# Remove custom types
 	remove_custom_type("GUIButton")
 	remove_custom_type("GUIPanel")
-	remove_custom_type("GUIDialog")
-	remove_custom_type("GUITooltip") 
+	remove_custom_type("GUIDialog") 

@@ -2,21 +2,14 @@
 extends Button
 class_name GUIButton
 
-## Enhanced button with hover effects, sound support, and fade animations
+## Mobile-friendly button with focus handling and fade animations
 
-# Signals
-signal hover_started
-signal hover_ended
-
-# Hover effect properties
-@export var use_hover_effect: bool = true
-@export var hover_tint: Color = Color(1.2, 1.2, 1.2, 1.0)
-@export var hover_scale: float = 1.05
-@export var transition_duration: float = 0.15
+# Focus properties
+@export var use_custom_focus: bool = true
+@export var disable_focus_visual: bool = true
 
 # Sound properties
 @export var use_sounds: bool = false
-@export var hover_sound: AudioStream
 @export var click_sound: AudioStream
 
 # Responsive design properties
@@ -30,12 +23,11 @@ signal hover_ended
 @export_enum("Linear", "Ease In", "Ease Out", "Ease In Out") var fade_easing: int = 2  # Default to Ease Out
 
 # Private variables
-var _original_scale: Vector2
 var _original_modulate: Color
-var _hover_tween: Tween
 var _audio_player: AudioStreamPlayer
+var _custom_stylebox: StyleBoxFlat
 
-func _enter_tree():
+func _enter_tree() -> void:
 	# This is crucial for proper serialization in the editor
 	if Engine.is_editor_hint():
 		# Make sure we're properly set as a child of our parent
@@ -44,9 +36,8 @@ func _enter_tree():
 			if get_parent().owner and self.owner != get_parent().owner:
 				self.owner = get_parent().owner
 
-func _ready():
+func _ready() -> void:
 	# Initialize properties
-	_original_scale = scale
 	_original_modulate = modulate
 	
 	# Handle anchors and size/position to avoid warnings
@@ -59,16 +50,25 @@ func _ready():
 		set_deferred("size", current_size)
 		set_deferred("position", current_position)
 	
+	# Set up focus handling
+	if use_custom_focus:
+		if disable_focus_visual:
+			# Option 1: Disable focus completely
+			focus_mode = Control.FOCUS_NONE
+		else:
+			# Option 2: Use a custom focus style
+			_setup_custom_focus_style()
+			
+			# Connect focus signals
+			focus_entered.connect(_on_focus_entered)
+			focus_exited.connect(_on_focus_exited)
+	
 	# Connect signals
-	if not mouse_entered.is_connected(_on_mouse_entered):
-		mouse_entered.connect(_on_mouse_entered)
-	if not mouse_exited.is_connected(_on_mouse_exited):
-		mouse_exited.connect(_on_mouse_exited)
 	if not pressed.is_connected(_on_pressed):
 		pressed.connect(_on_pressed)
 	
 	# Create audio player if sounds are enabled
-	if use_sounds and (hover_sound != null or click_sound != null):
+	if use_sounds and click_sound != null:
 		_setup_audio_player()
 	
 	# Apply responsive settings if enabled
@@ -81,19 +81,38 @@ func _ready():
 	if use_fade_animations and not Engine.is_editor_hint():
 		modulate.a = 0.0
 
-## Set both hover and click sounds at once
-func set_sounds(hover: AudioStream, click: AudioStream) -> void:
-	hover_sound = hover
-	click_sound = click
+## Set up a custom focus style
+func _setup_custom_focus_style() -> void:
+	# Create a custom stylebox for focus
+	_custom_stylebox = StyleBoxFlat.new()
+	_custom_stylebox.bg_color = Color(0, 0, 0, 0)  # Transparent background
+	_custom_stylebox.border_width_left = 0
+	_custom_stylebox.border_width_top = 0
+	_custom_stylebox.border_width_right = 0
+	_custom_stylebox.border_width_bottom = 0
+	
+	# Apply the custom focus style
+	add_theme_stylebox_override("focus", _custom_stylebox)
+
+## Handle focus entered
+func _on_focus_entered() -> void:
+	if use_custom_focus and not disable_focus_visual:
+		# Apply custom focus visual here if needed
+		pass
+
+## Handle focus exited
+func _on_focus_exited() -> void:
+	if use_custom_focus and not disable_focus_visual:
+		# Remove custom focus visual here if needed
+		pass
+
+## Set click sound
+func set_click_sound(sound: AudioStream) -> void:
+	click_sound = sound
 	use_sounds = true
 	
 	if not _audio_player:
 		_setup_audio_player()
-
-## Disable all visual and sound effects
-func disable_effects() -> void:
-	use_hover_effect = false
-	use_sounds = false
 
 ## Apply responsive settings based on viewport size
 func apply_responsive_settings() -> void:
@@ -152,51 +171,6 @@ func _setup_audio_player() -> void:
 	if Engine.is_editor_hint() and owner:
 		_audio_player.owner = owner
 
-func _on_mouse_entered() -> void:
-	if not use_hover_effect:
-		return
-		
-	# Cancel any existing tween
-	if _hover_tween and _hover_tween.is_valid():
-		_hover_tween.kill()
-		
-	# Create a new tween for hover effect
-	_hover_tween = create_tween()
-	_hover_tween.set_parallel(true)
-	_hover_tween.set_ease(Tween.EASE_OUT)
-	_hover_tween.set_trans(Tween.TRANS_CUBIC)
-	
-	# Animate scale and color
-	_hover_tween.tween_property(self, "scale", _original_scale * hover_scale, transition_duration)
-	_hover_tween.tween_property(self, "modulate", _original_modulate * hover_tint, transition_duration)
-	
-	# Play hover sound if enabled
-	if use_sounds and hover_sound and _audio_player:
-		_audio_player.stream = hover_sound
-		_audio_player.play()
-		
-	emit_signal("hover_started")
-
-func _on_mouse_exited() -> void:
-	if not use_hover_effect:
-		return
-		
-	# Cancel any existing tween
-	if _hover_tween and _hover_tween.is_valid():
-		_hover_tween.kill()
-		
-	# Create a new tween for hover effect
-	_hover_tween = create_tween()
-	_hover_tween.set_parallel(true)
-	_hover_tween.set_ease(Tween.EASE_OUT)
-	_hover_tween.set_trans(Tween.TRANS_CUBIC)
-	
-	# Animate back to original scale and color
-	_hover_tween.tween_property(self, "scale", _original_scale, transition_duration)
-	_hover_tween.tween_property(self, "modulate", _original_modulate, transition_duration)
-	
-	emit_signal("hover_ended")
-
 func _on_pressed() -> void:
 	# Play click sound if enabled
 	if use_sounds and click_sound and _audio_player:
@@ -204,11 +178,10 @@ func _on_pressed() -> void:
 		_audio_player.play()
 
 # This is called when the node is about to be removed from the scene
-func _notification(what):
+func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		# Clean up any resources
-		if _hover_tween and _hover_tween.is_valid():
-			_hover_tween.kill()
+		pass
 	elif what == NOTIFICATION_EXIT_TREE:
 		# Disconnect signals to prevent memory leaks
 		if get_tree() and get_tree().root and use_responsive_sizing:

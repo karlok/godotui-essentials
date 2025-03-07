@@ -44,12 +44,6 @@ func create_components():
 	
 	vbox.add_child(panel)
 	
-	# Create a tooltip using GUIPaths and attach it to the panel
-	var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
-	tooltip.text = "This tooltip was created using GUIPaths"
-	add_child(tooltip)
-	tooltip.attach_to(panel)
-	
 	# Create a button that shows a dialog
 	var dialog_button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 	dialog_button.text = "Show Dialog"

@@ -65,31 +65,6 @@ func _run():
 	panel.add_child(dialog)
 	dialog.owner = new_scene
 	
-	# Create a control for the tooltip target
-	var tooltip_target = Control.new()
-	tooltip_target.name = "TooltipTarget"
-	tooltip_target.position = Vector2(50, 150)
-	tooltip_target.size = Vector2(120, 40)
-	
-	# Add the tooltip target to the panel
-	panel.add_child(tooltip_target)
-	tooltip_target.owner = new_scene
-	
-	# Create a GUITooltip
-	var tooltip = Control.new()
-	tooltip.name = "GUITooltip"
-	tooltip.position = Vector2(50, 200)
-	tooltip.size = Vector2(200, 50)
-	
-	# Load the GUITooltip script
-	var tooltip_script = load("res://addons/godotui_essentials/scripts/gui_tooltip.gd")
-	tooltip.set_script(tooltip_script)
-	tooltip.text = "This is a test tooltip"
-	
-	# Add the tooltip to the panel
-	panel.add_child(tooltip)
-	tooltip.owner = new_scene
-	
 	# Save the scene
 	var packed_scene = PackedScene.new()
 	var result = packed_scene.pack(new_scene)

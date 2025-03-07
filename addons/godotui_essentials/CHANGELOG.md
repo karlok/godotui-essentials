@@ -31,10 +31,9 @@ All notable changes to the GodotUI Essentials addon will be documented in this f
 ## [1.0.1] - 2023-02-15
 
 ### Initial Release
-- GUIButton component with hover effects, sound support, and fade animations
+- GUIButton component with sound support, and fade animations
 - GUIPanel component with customizable borders, shadows, and fade animations
 - GUIDialog component with title, message, buttons, and fade animations
-- GUITooltip component with text, rich text support, and fade animations
 - Responsive design utilities
 - Fade animation utilities
 - Type-on effect for text

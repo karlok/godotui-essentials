@@ -29,8 +29,7 @@ const SPACING_RANGE = {"min": 5, "max": 16}
 const COMPONENT_SIZE_RANGES = {
 	"button": {"min": Vector2(80, 30), "max": Vector2(150, 60)},
 	"panel": {"min": Vector2(200, 100), "max": Vector2(500, 250)},
-	"dialog": {"min": Vector2(250, 120), "max": Vector2(550, 300)},
-	"tooltip": {"min": Vector2(80, 30), "max": Vector2(150, 60)}
+	"dialog": {"min": Vector2(250, 120), "max": Vector2(550, 300)}
 }
 
 # For backward compatibility - these will be deprecated in future versions
@@ -187,10 +186,6 @@ static func apply_dialog_settings(dialog: Control) -> void:
 static func apply_panel_settings(panel: Control) -> void:
 	panel.custom_minimum_size = get_min_size("panel")
 
-## Apply responsive settings to a tooltip
-static func apply_tooltip_settings(tooltip: Control) -> void:
-	tooltip.custom_minimum_size = get_min_size("tooltip")
-
 ## Apply responsive settings to a button
 static func apply_button_settings(button: Button) -> void:
 	button.custom_minimum_size = get_min_size("button")
@@ -252,7 +247,7 @@ static func get_screen_size_category() -> ScreenSize:
 	elif width < LARGE_BREAKPOINT:
 		return ScreenSize.LARGE
 	else:
-		return ScreenSize.XLARGE 
+		return ScreenSize.XLARGE
 
 ## Safely set the size of a Control node to avoid warnings with anchored controls
 static func set_safe_size(control: Control, size: Vector2) -> void:

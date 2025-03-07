@@ -10,7 +10,7 @@ A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides read
 
 ## Features
 
-- **Basic UI Components**: Pre-configured buttons, panels, dialogs, menus, and tooltips
+- **Mobile-Friendly UI Components**: Pre-configured buttons, panels, and dialogs optimized for touch input
 - **Placeholder Art**: Simple, clean placeholder graphics for prototyping
 - **Viewport-Based Responsive Design**: UI elements that adapt smoothly to any screen size or orientation
 - **Fade Animations**: Smooth fade-in and fade-out transitions for all UI components
@@ -34,10 +34,9 @@ A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides read
 ## Components
 
 ### UI Elements
-- **GUIButton**: Enhanced buttons with hover effects and sound support
+- **GUIButton**: Mobile-friendly button with focus handling and sound support
 - **GUIPanel**: Configurable panels with various border styles
 - **GUIDialog**: Simple dialog boxes with customizable layouts
-- **GUITooltip**: Tooltips that appear on hover
 
 ### Responsive Design
 All components include built-in responsive capabilities that:
@@ -62,14 +61,6 @@ dialog.message = "Try again?"
 dialog.add_button("Restart", "restart_game")
 dialog.add_button("Quit", "quit_game")
 add_child(dialog)
-
-# Example: Creating a responsive tooltip
-var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
-tooltip.text = "This tooltip scales with the viewport"
-tooltip.use_responsive_sizing = true
-tooltip.font_size_category = "normal"
-add_child(tooltip)
-tooltip.attach_to($MyButton)
 
 # Example: Using fade animations
 var button = preload(GUIPaths.BUTTON_SCENE).instantiate()

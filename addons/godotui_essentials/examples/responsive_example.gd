@@ -187,14 +187,6 @@ func add_component_row(grid, button_text, size_category):
 	var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
 	button.text = button_text
 	button.font_size_category = size_category
-	
-	# Add a tooltip to the button
-	var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
-	tooltip.text = "This is a " + size_category + " tooltip"
-	tooltip.font_size_category = size_category
-	add_child(tooltip)
-	tooltip.attach_to(button)
-	
 	grid.add_child(button)
 
 func show_responsive_dialog():

@@ -43,7 +43,6 @@ func create_fade_example_ui():
 	add_button_example(grid)
 	add_panel_example(grid)
 	add_dialog_example(grid)
-	add_tooltip_example(grid)
 
 func add_button_example(parent):
 	# Add a label
@@ -146,52 +145,4 @@ func add_dialog_example(parent):
 	add_child(dialog)
 	
 	# Connect the button to show the dialog
-	show_dialog_button.pressed.connect(func(): dialog.show_dialog())
-
-func add_tooltip_example(parent):
-	# Add a label
-	var label = Label.new()
-	label.text = "GUITooltip:"
-	parent.add_child(label)
-	
-	# Create a container for the tooltip target and controls
-	var container = VBoxContainer.new()
-	container.add_theme_constant_override("separation", 10)
-	parent.add_child(container)
-	
-	# Create a panel to hover over
-	var hover_panel = Panel.new()
-	hover_panel.custom_minimum_size = Vector2(200, 100)
-	container.add_child(hover_panel)
-	
-	# Add a label to the panel
-	var panel_label = Label.new()
-	panel_label.text = "Hover over me"
-	panel_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	panel_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	panel_label.set_anchors_preset(Control.PRESET_FULL_RECT)
-	hover_panel.add_child(panel_label)
-	
-	# Create a tooltip with fade animations
-	var tooltip = preload(GUIPaths.TOOLTIP_SCENE).instantiate()
-	tooltip.text = "This tooltip uses fade-in and fade-out animations"
-	tooltip.use_fade_animations = true
-	tooltip.fade_in_duration = 0.3
-	tooltip.fade_out_duration = 0.2
-	add_child(tooltip)
-	tooltip.attach_to(hover_panel)
-	
-	# Create control buttons
-	var button_container = HBoxContainer.new()
-	button_container.add_theme_constant_override("separation", 10)
-	container.add_child(button_container)
-	
-	var fade_in_button = Button.new()
-	fade_in_button.text = "Show Tooltip"
-	fade_in_button.pressed.connect(func(): tooltip.show_tooltip())
-	button_container.add_child(fade_in_button)
-	
-	var fade_out_button = Button.new()
-	fade_out_button.text = "Hide Tooltip"
-	fade_out_button.pressed.connect(func(): tooltip.hide_tooltip())
-	button_container.add_child(fade_out_button) 
+	show_dialog_button.pressed.connect(func(): dialog.show_dialog()) 

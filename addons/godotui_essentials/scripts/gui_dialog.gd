@@ -53,6 +53,7 @@ signal closed
 @export var button_ids: Array[int] = [0]
 @export var default_button: int = 0
 @export var cancel_button: int = -1
+@export var disable_button_focus_visual: bool = true
 
 # Private variables
 var _panel: Panel
@@ -183,6 +184,11 @@ func _setup_dialog():
 		_close_button = Button.new()
 		_close_button.text = "×"
 		_close_button.flat = true
+		
+		# Disable focus visual if needed
+		if disable_button_focus_visual:
+			_close_button.focus_mode = Control.FOCUS_NONE
+		
 		_close_button.pressed.connect(_on_close_button_pressed)
 		title_bar.add_child(_close_button)
 		
@@ -289,6 +295,11 @@ func _create_buttons():
 	for i in range(buttons.size()):
 		var button = Button.new()
 		button.text = buttons[i]
+		
+		# Disable focus visual if needed
+		if disable_button_focus_visual:
+			button.focus_mode = Control.FOCUS_NONE
+		
 		button.pressed.connect(_on_button_pressed.bind(button_ids[i]))
 		_button_container.add_child(button)
 		_buttons.append(button)

@@ -4,18 +4,17 @@
 
 ### Installation
 
-1. Download the latest release from the [releases page](https://github.com/yourusername/godotui-essentials/releases)
-2. Extract the ZIP file
-3. Copy the `addons/godotui_essentials` folder to your Godot project's `addons` folder
-4. Enable the plugin in Godot: Project → Project Settings → Plugins → GodotUI Essentials
+1. Clone the [repo](https://github.com/yourusername/godotui-essentials/)
+2. Copy the `addons/godotui_essentials` folder to your Godot project's `addons` folder
+3. Enable the plugin in Godot: Project → Project Settings → Plugins → GodotUI Essentials
 
 ### Version Compatibility
 
 GodotUI Essentials is designed for Godot 4.3+ and takes advantage of the latest features in the Godot engine.
 
-| GodotUI Version | Compatible Godot Versions | Notes |
-|-----------------|---------------------------|-------|
-| 1.0.4           | 4.3+                      | Initial release |
+| GodotUI Version | Compatible Godot Versions |
+|-----------------|---------------------------|
+| 1.0.5           | 4.3+                      |
 
 #### Compatibility Notes:
 - This add-on will **not** work with Godot 3.x
@@ -28,7 +27,7 @@ Once the plugin is enabled, you can use GodotUI Essentials in your project in se
 
 1. **Using the Node Creation Dialog**:
    - Click the "+" button to add a new node
-   - Search for "GUI" to find all GodotUI components (GUIButton, GUIPanel, GUIDialog, GUITooltip)
+   - Search for "GUI" to find all GodotUI components (GUIButton, GUIPanel, GUIDialog)
    - Add the desired component to your scene
 
 2. **Instantiating Components via Code**:
@@ -77,37 +76,110 @@ To use these examples as learning resources:
 
 ## Components
 
-### GUIButton
+### UI Elements
+- **GUIButton**: Mobile-friendly button with focus handling and sound support
+- **GUIPanel**: Configurable panels with various border styles
+- **GUIDialog**: Simple dialog boxes with customizable layouts
 
-An enhanced button with hover effects and sound support.
+### Responsive Design
+All components include built-in responsive capabilities that:
+- Scale smoothly based on viewport dimensions
+- Adapt to different screen orientations
+- Support percentage-based sizing
+- Automatically adjust layouts for optimal viewing
 
-#### Properties
+### Placeholder Art
+- Basic shapes (circles, squares, etc.)
+- UI frames and backgrounds
+- Simple character silhouettes
+- Generic icons for common game actions
+
+## Usage Examples
+
+```gdscript
+# Example: Creating a dialog programmatically using GUIPaths
+var dialog = preload(GUIPaths.DIALOG_SCENE).instantiate()
+dialog.title = "Game Over"
+dialog.message = "Try again?"
+dialog.add_button("Restart", "restart_game")
+dialog.add_button("Quit", "quit_game")
+add_child(dialog)
+
+# Example: Using fade animations
+var button = preload(GUIPaths.BUTTON_SCENE).instantiate()
+button.text = "Fade Button"
+button.use_fade_animations = true
+button.fade_in_duration = 0.5
+add_child(button)
+button.fade_in()  # Smoothly fade in the button
+
+# Example: Using type-on text effects
+var label = Label.new()
+label.text = "This text will appear character by character."
+add_child(label)
+
+var type_on_effect = GUITypeOnEffect.create_for_label(label)
+type_on_effect.typing_speed = 0.05
+type_on_effect.play_sound = true
+type_on_effect.start_typing()
+
+# Example: Using viewport-based sizing
+func _ready():
+    # Create a panel that's 50% of viewport width
+    var panel = preload(GUIPaths.PANEL_SCENE).instantiate()
+    panel.custom_minimum_size.x = GUIResponsive.get_width_percent(50)
+    add_child(panel)
+    
+    # Connect to window resize to update UI
+    get_tree().root.size_changed.connect(func():
+        # Update panel size when viewport changes
+        panel.custom_minimum_size.x = GUIResponsive.get_width_percent(50)
+        
+        # Adjust layout based on orientation
+        if GUIResponsive.is_portrait_mode():
+            $MyContainer.vertical = true
+        else:
+            $MyContainer.vertical = false
+    )
+```
+
+## GUIButton
+
+A mobile-friendly button with focus handling and sound support.
+
+### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `hover_sound` | AudioStream | Sound to play when the mouse hovers over the button |
-| `click_sound` | AudioStream | Sound to play when the button is clicked |
+| `use_custom_focus` | bool | Whether to use custom focus handling |
+| `disable_focus_visual` | bool | Whether to disable the focus visual |
 | `use_sounds` | bool | Whether to use sound effects |
-| `use_hover_effect` | bool | Whether to use hover visual effects |
-| `hover_tint` | Color | Color tint to apply on hover |
-| `hover_scale` | float | Scale factor to apply on hover |
-| `transition_duration` | float | Duration of hover transition animations |
+| `click_sound` | AudioStream | Sound to play when the button is clicked |
+| `use_responsive_sizing` | bool | Whether to use responsive sizing |
+| `font_size_category` | String | Font size category for responsive sizing |
+| `use_fade_animations` | bool | Whether to use fade animations |
+| `fade_in_duration` | float | Duration of fade-in animation |
+| `fade_out_duration` | float | Duration of fade-out animation |
+| `fade_easing` | enum | Easing type for fade animations |
 
-#### Methods
+### Methods
 
 | Method | Parameters | Description |
 |--------|------------|-------------|
-| `set_sounds` | hover: AudioStream, click: AudioStream | Set both hover and click sounds at once |
-| `disable_effects` | none | Disable all visual and sound effects |
+| `set_click_sound` | sound: AudioStream | Set the click sound |
+| `fade_in` | duration: float = -1.0, delay: float = 0.0 | Fade in the button |
+| `fade_out` | duration: float = -1.0, delay: float = 0.0 | Fade out the button |
+| `show_with_fade` | duration: float = -1.0, delay: float = 0.0 | Show the button with fade |
+| `hide_with_fade` | duration: float = -1.0, delay: float = 0.0 | Hide the button with fade |
 
-#### Example
+### Example
 
 ```gdscript
 # Create a button programmatically
 var button = preload("res://addons/godotui_essentials/components/gui_button.tscn").instantiate()
 button.text = "Play Game"
-button.hover_tint = Color(1.5, 1.2, 1.2)
-button.hover_scale = 1.1
+button.use_custom_focus = true
+button.disable_focus_visual = true
 add_child(button)
 
 # Connect to the pressed signal
@@ -202,17 +274,16 @@ A customizable dialog box with title, message, and buttons.
 # Create a dialog programmatically
 var dialog = preload("res://addons/godotui_essentials/components/gui_dialog.tscn").instantiate()
 dialog.title = "Game Over"
-dialog.message = "You scored 1000 points!"
-dialog.add_button("Play Again", "play_again")
-dialog.add_button("Quit", "quit")
+dialog.message = "Try again?"
+dialog.add_button("Restart", "restart_game")
+dialog.add_button("Quit", "quit_game")
 add_child(dialog)
-dialog.show_dialog()
 
 # Connect to signals
 dialog.button_pressed.connect(func(button_id):
-    if button_id == "play_again":
+    if button_id == "restart_game":
         restart_game()
-    elif button_id == "quit":
+    elif button_id == "quit_game":
         quit_game()
 )
 
@@ -230,71 +301,13 @@ confirm.button_pressed.connect(func(button_id):
 )
 ```
 
-### GUITooltip
-
-A customizable tooltip that appears when hovering over a control.
-
-#### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `text` | String | Text to display in the tooltip |
-| `rich_text` | String | Rich text (BBCode) to display in the tooltip |
-| `tooltip_mode` | String enum | Mode of the tooltip ("text", "rich_text") |
-| `show_delay` | float | Delay before showing the tooltip (seconds) |
-| `hide_delay` | float | Delay before hiding the tooltip (seconds) |
-| `follow_mouse` | bool | Whether the tooltip follows the mouse cursor |
-| `offset` | Vector2 | Offset from the mouse cursor position |
-| `auto_size` | bool | Whether to automatically size the tooltip |
-| `min_width` | int | Minimum width of the tooltip |
-| `max_width` | int | Maximum width of the tooltip (0 for unlimited) |
-| `background_color` | Color | Background color of the tooltip |
-| `border_color` | Color | Border color of the tooltip |
-| `text_color` | Color | Text color of the tooltip |
-
-#### Methods
-
-| Method | Parameters | Description |
-|--------|------------|-------------|
-| `attach_to` | target: Control | Attach the tooltip to a control |
-| `detach` | none | Detach the tooltip from its target |
-| `show_tooltip` | none | Show the tooltip immediately |
-| `hide_tooltip` | none | Hide the tooltip immediately |
-| `set_style` | bg_color: Color, border_col: Color, txt_color: Color | Set the tooltip style |
-| `create_for_control` (static) | parent: Node, target: Control, tooltip_text: String | Create a tooltip and attach it to a control |
-
-#### Example
-
-```gdscript
-# Create a tooltip programmatically
-var tooltip = preload("res://addons/godotui_essentials/components/gui_tooltip.tscn").instantiate()
-tooltip.text = "This is a tooltip"
-tooltip.show_delay = 0.3
-add_child(tooltip)
-tooltip.attach_to($Button)
-
-# Create a rich text tooltip
-var rich_tooltip = preload("res://addons/godotui_essentials/components/gui_tooltip.tscn").instantiate()
-rich_tooltip.tooltip_mode = "rich_text"
-rich_tooltip.rich_text = "[b]Bold Title[/b]\nThis is [color=yellow]rich text[/color] with formatting."
-add_child(rich_tooltip)
-rich_tooltip.attach_to($Panel)
-
-# Create a tooltip using the static method
-var quick_tooltip = GUITooltip.create_for_control(
-    self,
-    $TextureRect,
-    "This is a quick tooltip"
-)
-```
-
 ## Fade Animations
 
 The add-on includes a fade animation system that allows UI elements to smoothly fade in and out. This is implemented through the `GUIFadeAnimation` singleton, which provides utilities for creating fade animations.
 
 ### Using Fade Animations
 
-All components in the add-on (GUIButton, GUIPanel, GUIDialog, GUITooltip) have built-in fade animation capabilities. To enable fade animations:
+All components in the add-on (GUIButton, GUIPanel, GUIDialog) have built-in fade animation capabilities. To enable fade animations:
 
 ```gdscript
 # Enable fade animations on a component
@@ -321,7 +334,7 @@ Each component has the following fade animation properties:
 
 Each component provides the following methods for controlling fade animations:
 
-#### GUIButton, GUIPanel, GUITooltip
+#### GUIButton, GUIPanel
 - `fade_in(duration: float = -1.0, delay: float = 0.0)`: Fade in the component
 - `fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool = true)`: Fade out the component
 - `show_with_fade(duration: float = -1.0, delay: float = 0.0)`: Show the component with fade
@@ -414,15 +427,12 @@ var icon = preload(GUIPaths.get_component_icon("Button"))
 | `BUTTON_SCENE` | Path to GUIButton scene |
 | `PANEL_SCENE` | Path to GUIPanel scene |
 | `DIALOG_SCENE` | Path to GUIDialog scene |
-| `TOOLTIP_SCENE` | Path to GUITooltip scene |
 | `BUTTON_SCRIPT` | Path to GUIButton script |
 | `PANEL_SCRIPT` | Path to GUIPanel script |
 | `DIALOG_SCRIPT` | Path to GUIDialog script |
-| `TOOLTIP_SCRIPT` | Path to GUITooltip script |
 | `BUTTON_ICON` | Path to button icon |
 | `PANEL_ICON` | Path to panel icon |
 | `DIALOG_ICON` | Path to dialog icon |
-| `TOOLTIP_ICON` | Path to tooltip icon |
 
 ### Helper Functions
 
@@ -448,7 +458,7 @@ The system works by:
 
 ### Using Responsive Components
 
-All components in the add-on (GUIButton, GUIPanel, GUIDialog, GUITooltip) have built-in responsive capabilities. To enable responsive sizing:
+All components in the add-on (GUIButton, GUIPanel, GUIDialog) have built-in responsive capabilities. To enable responsive sizing:
 
 ```gdscript
 # Enable responsive sizing on a component
@@ -474,10 +484,6 @@ Each component has specific responsive properties:
 - `title_size_category`: Title text size category
 - `message_size_category`: Message text size category
 - `button_size_category`: Button text size category
-
-#### GUITooltip
-- `use_responsive_sizing`: Enable/disable responsive sizing
-- `font_size_category`: Text size category
 
 ### Using the GUIResponsive Singleton
 
@@ -590,7 +596,6 @@ The add-on includes several SVG files that can be used as placeholder art in you
 - `button_icon.svg`: Simple button icon for the GUIButton component
 - `panel_icon.svg`: Simple panel icon for the GUIPanel component
 - `dialog_icon.svg`: Simple dialog icon for the GUIDialog component
-- `tooltip_icon.svg`: Simple tooltip icon for the GUITooltip component
 - `panel_background.svg`: Panel background with subtle highlights and shadows
 
 ### Character Assets
@@ -727,16 +732,14 @@ See the example scene `type_on_example.tscn` for a complete demonstration of the
 
 ## Tips and Best Practices
 
-1. **Performance**: The hover effects on GUIButton use Tweens, which are efficient but can add up if you have many buttons. If you're experiencing performance issues, consider disabling hover effects for less important buttons.
-
-2. **Sounds**: When using sound effects, make sure to:
+1. **Sounds**: When using sound effects, make sure to:
    - Keep sound files small and compressed
    - Use the "UI" audio bus if available
    - Consider disabling sounds on mobile platforms
 
-3. **Customization**: All components are designed to be easily customizable. Don't hesitate to modify the properties to match your game's style.
+2. **Customization**: All components are designed to be easily customizable. Don't hesitate to modify the properties to match your game's style.
 
-4. **Extending**: You can extend the provided components to add your own functionality:
+3. **Extending**: You can extend the provided components to add your own functionality:
 
 ```gdscript
 extends GUIButton
@@ -750,8 +753,6 @@ func _ready():
 5. **SVG Scaling**: The placeholder art is provided as SVG files, which means they can be scaled to any size without losing quality. This makes them ideal for responsive UIs.
 
 6. **Dialog Management**: When using multiple dialogs, consider creating a dialog manager to handle showing and hiding dialogs, as well as managing dialog stacks for nested dialogs.
-
-7. **Tooltips**: For performance reasons, consider creating tooltips only when needed rather than having many inactive tooltips in your scene.
 
 ## Troubleshooting and FAQ
 
