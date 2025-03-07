@@ -14,7 +14,7 @@ A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides read
 
 ## Installation
 
-1. Clone the repo, as it still needs work :)
+1. Clone the repo, as it is too early for a release :)
 3. Copy the `addons/godotui_essentials` folder to your Godot project's `addons` folder
 4. Enable the plugin in Godot: Project → Project Settings → Plugins → GodotUI Essentials
 

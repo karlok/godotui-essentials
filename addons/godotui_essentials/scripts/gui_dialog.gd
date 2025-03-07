@@ -48,54 +48,80 @@ signal closed
 @export var fade_out_duration: float = 0.2
 @export_enum("Linear", "Ease In", "Ease Out", "Ease In Out") var fade_easing: int = 2  # Default to Ease Out
 
+# Button properties
+@export var buttons: Array[String] = ["OK"]
+@export var button_ids: Array[int] = [0]
+@export var default_button: int = 0
+@export var cancel_button: int = -1
+
 # Private variables
 var _panel: Panel
 var _title_label: Label
 var _message_label: Label
-var _button_container: HBoxContainer
 var _close_button: Button
-var _buttons: Dictionary = {}
+var _button_container: HBoxContainer
+var _buttons: Array[Button] = []
+var _drag_position: Vector2
 var _dragging: bool = false
-var _drag_start_position: Vector2
 var _original_modulate: Color
 var _is_closing: bool = false
+
+func _enter_tree():
+	# This is crucial for proper serialization in the editor
+	if Engine.is_editor_hint():
+		# Make sure all children have the proper owner
+		if owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
 
 func _ready():
 	# Store original modulate
 	_original_modulate = modulate
 	
-	# Set up the dialog if not already set up
-	if not _panel:
-		_setup_dialog()
+	# Set up the dialog
+	_setup_dialog()
 	
 	# Apply responsive settings if enabled
 	if use_responsive_sizing and not Engine.is_editor_hint():
 		apply_responsive_settings()
-		get_tree().root.size_changed.connect(apply_responsive_settings)
+		if not get_tree().root.size_changed.is_connected(apply_responsive_settings):
+			get_tree().root.size_changed.connect(apply_responsive_settings)
 	
 	# If fade animations are enabled, start invisible if not in editor
 	if use_fade_animations and not Engine.is_editor_hint():
 		modulate.a = 0.0
-		
-	# Hide the dialog initially if not in editor
-	if not Engine.is_editor_hint():
-		visible = false
+	
+	# Set up modal behavior
+	if modal:
+		# Create a modal background if needed
+		if not get_parent() or not get_parent().has_node("ModalBackground"):
+			var modal_bg = ColorRect.new()
+			modal_bg.name = "ModalBackground"
+			modal_bg.color = Color(0, 0, 0, 0.5)
+			modal_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+			
+			if get_parent():
+				get_parent().add_child(modal_bg)
+				get_parent().move_child(modal_bg, get_index())
+				
+				# This is crucial for proper serialization
+				if Engine.is_editor_hint() and get_parent().owner:
+					modal_bg.owner = get_parent().owner
+			else:
+				add_sibling(modal_bg)
+				
+				# This is crucial for proper serialization
+				if Engine.is_editor_hint() and owner:
+					modal_bg.owner = owner
+			
+			# Connect click outside if needed
+			if close_on_click_outside:
+				modal_bg.gui_input.connect(_on_modal_bg_gui_input)
 
-func _setup_dialog() -> void:
-	# Set up the control properties
+func _setup_dialog():
+	# Set minimum size
 	custom_minimum_size = min_size
-	size_flags_horizontal = SIZE_SHRINK_CENTER
-	size_flags_vertical = SIZE_SHRINK_CENTER
-	
-	# Handle anchors and size/position to avoid warnings
-	# Store current values
-	var current_size = size
-	var current_position = position
-	
-	# If we have non-equal opposite anchors, use set_deferred for size and position
-	if anchor_right != anchor_left or anchor_bottom != anchor_top:
-		set_deferred("size", current_size)
-		set_deferred("position", current_position)
 	
 	# Create the panel background
 	_panel = Panel.new()
@@ -104,6 +130,10 @@ func _setup_dialog() -> void:
 	_panel.set_deferred("position", Vector2.ZERO)
 	add_child(_panel)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_panel.owner = owner
+	
 	# Create a VBox for the content
 	var vbox = VBoxContainer.new()
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -111,6 +141,10 @@ func _setup_dialog() -> void:
 	vbox.set_deferred("position", Vector2.ZERO)
 	vbox.add_theme_constant_override("separation", 10)
 	_panel.add_child(vbox)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		vbox.owner = owner
 	
 	# Add margins
 	var margin = 10
@@ -124,12 +158,20 @@ func _setup_dialog() -> void:
 	title_bar.size_flags_horizontal = SIZE_EXPAND_FILL
 	vbox.add_child(title_bar)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		title_bar.owner = owner
+	
 	# Add the title label
 	_title_label = Label.new()
 	_title_label.text = title
 	_title_label.add_theme_color_override("font_color", title_color)
 	_title_label.size_flags_horizontal = SIZE_EXPAND_FILL
 	title_bar.add_child(_title_label)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_title_label.owner = owner
 	
 	# Add the close button if needed
 	if use_close_button:
@@ -138,10 +180,18 @@ func _setup_dialog() -> void:
 		_close_button.flat = true
 		_close_button.pressed.connect(_on_close_button_pressed)
 		title_bar.add_child(_close_button)
+		
+		# This is crucial for proper serialization
+		if Engine.is_editor_hint() and owner:
+			_close_button.owner = owner
 	
 	# Add a separator
 	var separator = HSeparator.new()
 	vbox.add_child(separator)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		separator.owner = owner
 	
 	# Add the message label
 	_message_label = Label.new()
@@ -151,35 +201,33 @@ func _setup_dialog() -> void:
 	_message_label.size_flags_vertical = SIZE_EXPAND_FILL
 	_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(_message_label)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_message_label.owner = owner
+	
+	# Update message alignment
 	_update_message_alignment()
 	
-	# Add the button container
+	# Add button container
 	_button_container = HBoxContainer.new()
 	_button_container.size_flags_horizontal = SIZE_EXPAND_FILL
 	_button_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	_button_container.add_theme_constant_override("separation", 10)
 	vbox.add_child(_button_container)
 	
-	# Set up input handling for dragging
-	set_process_input(draggable)
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_button_container.owner = owner
 	
-	# Set up modal behavior
-	if modal:
-		# Create a modal background
-		var modal_bg = ColorRect.new()
-		modal_bg.name = "ModalBackground"
-		modal_bg.color = Color(0, 0, 0, 0.5)
-		modal_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-		modal_bg.set_deferred("size", size)
-		modal_bg.set_deferred("position", Vector2.ZERO)
-		modal_bg.mouse_filter = Control.MOUSE_FILTER_STOP
-		
-		# Add the modal background before the dialog
-		add_child(modal_bg)
-		move_child(modal_bg, 0)
-		
-		if close_on_click_outside:
-			modal_bg.gui_input.connect(_on_modal_bg_input)
+	# Add buttons
+	_create_buttons()
+	
+	# Set up dragging if enabled
+	if draggable:
+		title_bar.mouse_entered.connect(_on_title_bar_mouse_entered)
+		title_bar.mouse_exited.connect(_on_title_bar_mouse_exited)
+		title_bar.gui_input.connect(_on_title_bar_gui_input)
 
 func _input(event: InputEvent) -> void:
 	if not draggable or not visible or _is_closing:
@@ -193,15 +241,15 @@ func _input(event: InputEvent) -> void:
 				var title_bar_rect = Rect2(_title_label.global_position, _title_label.size)
 				if title_bar_rect.has_point(mouse_event.global_position):
 					_dragging = true
-					_drag_start_position = mouse_event.global_position - global_position
+					_drag_position = mouse_event.global_position - global_position
 			else:
 				_dragging = false
 	
 	elif event is InputEventMouseMotion and _dragging:
 		var mouse_event = event as InputEventMouseMotion
-		global_position = mouse_event.global_position - _drag_start_position
+		global_position = mouse_event.global_position - _drag_position
 
-func _on_modal_bg_input(event: InputEvent) -> void:
+func _on_modal_bg_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		close()
 
@@ -226,43 +274,58 @@ func _update_message_alignment() -> void:
 		"right":
 			_message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
-## Add a button to the dialog
-func add_button(text: String, button_id: String = "") -> void:
-	if not _button_container:
+func _create_buttons():
+	# Clear existing buttons
+	for button in _buttons:
+		button.queue_free()
+	_buttons.clear()
+	
+	# Create new buttons
+	for i in range(buttons.size()):
+		var button = Button.new()
+		button.text = buttons[i]
+		button.pressed.connect(_on_button_pressed.bind(button_ids[i]))
+		_button_container.add_child(button)
+		_buttons.append(button)
+		
+		# This is crucial for proper serialization
+		if Engine.is_editor_hint() and owner:
+			button.owner = owner
+		
+		# Set default button
+		if button_ids[i] == default_button:
+			button.grab_focus()
+
+func apply_responsive_settings():
+	if not use_responsive_sizing:
 		return
 		
-	# Use the text as the ID if no ID is provided
-	if button_id.is_empty():
-		button_id = text
+	# Apply font sizes
+	if _title_label:
+		_title_label.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(title_size_category))
 	
-	# Create the button
-	var button = Button.new()
-	button.text = text
-	button.size_flags_horizontal = SIZE_SHRINK_CENTER
+	if _message_label:
+		_message_label.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(message_size_category))
 	
-	# Apply responsive settings if enabled
-	if use_responsive_sizing:
-		button.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(button_size_category))
-	
-	# Connect the button's pressed signal
-	button.pressed.connect(func(): _on_button_pressed(button_id))
-	
-	# Add the button to the container and dictionary
-	_button_container.add_child(button)
-	_buttons[button_id] = button
+	# Apply to buttons
+	for button in _buttons:
+		button.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(button_size_category))
 
-## Remove a button from the dialog
-func remove_button(button_id: String) -> void:
-	if _buttons.has(button_id):
-		var button = _buttons[button_id]
-		_button_container.remove_child(button)
-		button.queue_free()
-		_buttons.erase(button_id)
-
-## Remove all buttons from the dialog
-func clear_buttons() -> void:
-	for button_id in _buttons.keys():
-		remove_button(button_id)
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		# Clean up any resources
+		pass
+	elif what == NOTIFICATION_EXIT_TREE:
+		# Disconnect signals to prevent memory leaks
+		if get_tree() and get_tree().root and use_responsive_sizing:
+			if get_tree().root.size_changed.is_connected(apply_responsive_settings):
+				get_tree().root.size_changed.disconnect(apply_responsive_settings)
+	elif what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		# When child order changes, make sure all children have the proper owner
+		if Engine.is_editor_hint() and owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
 
 ## Show the dialog
 func show_dialog() -> void:
@@ -304,50 +367,6 @@ func set_panel_style(style_name: String) -> void:
 		var gui_panel = _panel as Panel
 		if gui_panel.has_method("set_preset_style"):
 			gui_panel.call("set_preset_style", style_name)
-
-## Get a button by its ID
-func get_button(button_id: String) -> Button:
-	if _buttons.has(button_id):
-		return _buttons[button_id]
-	return null
-
-## Apply responsive settings based on screen size
-func apply_responsive_settings() -> void:
-	if not use_responsive_sizing:
-		return
-		
-	# Apply font sizes
-	if _title_label:
-		_title_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(title_size_category))
-	
-	if _message_label:
-		_message_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(message_size_category))
-	
-	# Apply button font sizes
-	for button in _buttons.values():
-		button.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(button_size_category))
-	
-	# Apply dialog size
-	custom_minimum_size = GUIResponsive.get_min_size("dialog")
-	
-	# Adjust dialog position to ensure it stays within viewport
-	if visible:
-		var viewport_size = get_viewport_rect().size
-		
-		# Center the dialog if it's too big for the viewport
-		if size.x > viewport_size.x or size.y > viewport_size.y:
-			position = (viewport_size - size) / 2
-		else:
-			# Ensure the dialog stays within the viewport
-			if position.x < 0:
-				position.x = 0
-			elif position.x + size.x > viewport_size.x:
-				position.x = viewport_size.x - size.x
-				
-			if position.y < 0:
-				position.y = 0
-			elif position.y + size.y > viewport_size.y:
-				position.y = viewport_size.y - size.y
 
 ## Fade in the dialog
 func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:

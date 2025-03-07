@@ -51,46 +51,49 @@ var _hide_timer: Timer
 var _mouse_inside: bool = false
 var _original_modulate: Color
 
+func _enter_tree():
+	# This is crucial for proper serialization in the editor
+	if Engine.is_editor_hint():
+		# Make sure all children have the proper owner
+		if owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
+
 func _ready():
 	# Store original modulate
 	_original_modulate = modulate
 	
-	# Set up the tooltip if not already set up
-	if not _panel:
-		_setup_tooltip()
+	# Set up the tooltip
+	_setup_tooltip()
 	
 	# Apply responsive settings if enabled
 	if use_responsive_sizing and not Engine.is_editor_hint():
 		apply_responsive_settings()
-		get_tree().root.size_changed.connect(apply_responsive_settings)
+		if not get_tree().root.size_changed.is_connected(apply_responsive_settings):
+			get_tree().root.size_changed.connect(apply_responsive_settings)
+	
+	# If fade animations are enabled, start invisible
+	if use_fade_animations:
+		modulate.a = 0.0
 	
 	# Hide the tooltip initially
 	visible = false
-	
-	# If fade animations are enabled, set alpha to 0
-	if use_fade_animations:
-		modulate.a = 0.0
 
-func _setup_tooltip() -> void:
-	# Set up the control properties
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
-	# Handle anchors and size/position to avoid warnings
-	# Store current values
-	var current_size = size
-	var current_position = position
-	
-	# If we have non-equal opposite anchors, use set_deferred for size and position
-	if anchor_right != anchor_left or anchor_bottom != anchor_top:
-		set_deferred("size", current_size)
-		set_deferred("position", current_position)
+func _setup_tooltip():
+	# Set minimum size
+	custom_minimum_size = Vector2(min_width, 0)
 	
 	# Create the panel background
 	_panel = Panel.new()
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_panel.set_deferred("size", size)  # Use set_deferred for the panel too
+	_panel.set_deferred("size", size)
 	_panel.set_deferred("position", Vector2.ZERO)
 	add_child(_panel)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_panel.owner = owner
 	
 	# Create a stylebox for the panel
 	var style_box = StyleBoxFlat.new()
@@ -115,6 +118,10 @@ func _setup_tooltip() -> void:
 	margin.add_theme_constant_override("margin_bottom", 6)
 	_panel.add_child(margin)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		margin.owner = owner
+	
 	# Create the label for regular text
 	_label = Label.new()
 	_label.text = text
@@ -122,6 +129,10 @@ func _setup_tooltip() -> void:
 	_label.visible = tooltip_mode == "text"
 	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	margin.add_child(_label)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_label.owner = owner
 	
 	# Create the rich text label
 	_rich_label = RichTextLabel.new()
@@ -134,74 +145,105 @@ func _setup_tooltip() -> void:
 	_rich_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	margin.add_child(_rich_label)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_rich_label.owner = owner
+	
 	# Set up timers
 	_show_timer = Timer.new()
 	_show_timer.one_shot = true
 	_show_timer.timeout.connect(_on_show_timer_timeout)
 	add_child(_show_timer)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_show_timer.owner = owner
+	
 	_hide_timer = Timer.new()
 	_hide_timer.one_shot = true
 	_hide_timer.timeout.connect(_on_hide_timer_timeout)
 	add_child(_hide_timer)
 	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_hide_timer.owner = owner
+	
 	# Set initial size
 	_update_size()
 
-func _process(_delta: float) -> void:
+func _process(delta):
+	# Update position if following mouse
 	if visible and follow_mouse and _target:
-		_update_position()
-
-func _update_size() -> void:
-	if auto_size:
-		# Reset size to allow content to determine it
-		custom_minimum_size = Vector2.ZERO
-		size = Vector2.ZERO
+		var mouse_pos = _target.get_global_mouse_position()
+		var tooltip_pos = mouse_pos + offset
 		
-		# Wait for the next frame to get the correct content size
+		# Ensure the tooltip stays within the viewport
+		var viewport_rect = get_viewport_rect().size
+		var tooltip_size = size
+		
+		if tooltip_pos.x + tooltip_size.x > viewport_rect.x:
+			tooltip_pos.x = mouse_pos.x - tooltip_size.x - offset.x
+		
+		if tooltip_pos.y + tooltip_size.y > viewport_rect.y:
+			tooltip_pos.y = mouse_pos.y - tooltip_size.y - offset.y
+		
+		global_position = tooltip_pos
+
+func _update_size():
+	if not auto_size:
+		return
+	
+	if tooltip_mode == "text" and _label:
+		_label.custom_minimum_size.x = min(max_width, max(min_width, 0))
+		
+		# Wait for the next frame to get the correct size
 		await get_tree().process_frame
 		
-		# Get the content size
-		var content_size = Vector2.ZERO
-		if tooltip_mode == "text" and _label:
-			content_size = _label.size
-		elif tooltip_mode == "rich_text" and _rich_label:
-			content_size = _rich_label.size
-		
-		# Apply min/max width constraints
-		var width = content_size.x
-		if min_width > 0 and width < min_width:
-			width = min_width
-		if max_width > 0 and width > max_width:
-			width = max_width
-		
-		# Set the final size
-		custom_minimum_size = Vector2(width, content_size.y)
+		# Update the control size based on the label size
+		custom_minimum_size = _label.size
 		size = custom_minimum_size
-	else:
-		# Use the specified min_width
-		custom_minimum_size = Vector2(min_width, 0)
+	
+	elif tooltip_mode == "rich_text" and _rich_label:
+		_rich_label.custom_minimum_size.x = min(max_width, max(min_width, 0))
+		
+		# Wait for the next frame to get the correct size
+		await get_tree().process_frame
+		
+		# Update the control size based on the rich label size
+		custom_minimum_size = _rich_label.size
 		size = custom_minimum_size
 
-func _update_position() -> void:
-	if not _target or not is_instance_valid(_target):
+func apply_responsive_settings():
+	if not use_responsive_sizing:
 		return
 		
-	var mouse_pos = _target.get_viewport().get_mouse_position()
-	var viewport_size = _target.get_viewport_rect().size
+	# Apply font size
+	var font_size = GUIResponsiveSingleton.get_font_size(font_size_category)
 	
-	# Calculate position based on mouse position and offset
-	var pos = mouse_pos + offset
+	if _label:
+		_label.add_theme_font_size_override("font_size", font_size)
 	
-	# Ensure the tooltip stays within the viewport
-	if pos.x + size.x > viewport_size.x:
-		pos.x = mouse_pos.x - size.x - offset.x
+	if _rich_label:
+		_rich_label.add_theme_font_size_override("normal_font_size", font_size)
 	
-	if pos.y + size.y > viewport_size.y:
-		pos.y = mouse_pos.y - size.y - offset.y
-	
-	# Apply the position
-	global_position = pos
+	# Update size after changing font size
+	_update_size()
+
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		# Clean up any resources
+		pass
+	elif what == NOTIFICATION_EXIT_TREE:
+		# Disconnect signals to prevent memory leaks
+		if get_tree() and get_tree().root and use_responsive_sizing:
+			if get_tree().root.size_changed.is_connected(apply_responsive_settings):
+				get_tree().root.size_changed.disconnect(apply_responsive_settings)
+	elif what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		# When child order changes, make sure all children have the proper owner
+		if Engine.is_editor_hint() and owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
 
 func _on_target_mouse_entered() -> void:
 	_mouse_inside = true

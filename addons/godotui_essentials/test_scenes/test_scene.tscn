@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://be22gpe30ocaf"]
+
+[ext_resource type="Script" uid="uid://bo5a2ee560ubg" path="res://addons/godotui_essentials/scripts/gui_panel.gd" id="1_j8ivh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g7g4h"]
+bg_color = Color(0, 0, 0, 0.3)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="TestScene" type="Node2D"]
+
+[node name="GUIPanel" type="Panel" parent="."]
+offset_left = 52.0
+offset_top = 53.0
+offset_right = 411.0
+offset_bottom = 334.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_g7g4h")
+script = ExtResource("1_j8ivh")
+metadata/_custom_type_script = "uid://bo5a2ee560ubg"

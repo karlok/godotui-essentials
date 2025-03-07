@@ -35,6 +35,15 @@ var _original_modulate: Color
 var _hover_tween: Tween
 var _audio_player: AudioStreamPlayer
 
+func _enter_tree():
+	# This is crucial for proper serialization in the editor
+	if Engine.is_editor_hint():
+		# Make sure we're properly set as a child of our parent
+		if get_parent() and not is_node_ready():
+			# Ensure we're properly owned by the scene root
+			if get_parent().owner and self.owner != get_parent().owner:
+				self.owner = get_parent().owner
+
 func _ready():
 	# Initialize properties
 	_original_scale = scale
@@ -51,9 +60,12 @@ func _ready():
 		set_deferred("position", current_position)
 	
 	# Connect signals
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-	pressed.connect(_on_pressed)
+	if not mouse_entered.is_connected(_on_mouse_entered):
+		mouse_entered.connect(_on_mouse_entered)
+	if not mouse_exited.is_connected(_on_mouse_exited):
+		mouse_exited.connect(_on_mouse_exited)
+	if not pressed.is_connected(_on_pressed):
+		pressed.connect(_on_pressed)
 	
 	# Create audio player if sounds are enabled
 	if use_sounds and (hover_sound != null or click_sound != null):
@@ -62,7 +74,8 @@ func _ready():
 	# Apply responsive settings if enabled
 	if use_responsive_sizing and not Engine.is_editor_hint():
 		apply_responsive_settings()
-		get_tree().root.size_changed.connect(apply_responsive_settings)
+		if not get_tree().root.size_changed.is_connected(apply_responsive_settings):
+			get_tree().root.size_changed.connect(apply_responsive_settings)
 	
 	# If fade animations are enabled, start invisible if not in editor
 	if use_fade_animations and not Engine.is_editor_hint():
@@ -88,10 +101,10 @@ func apply_responsive_settings() -> void:
 		return
 		
 	# Apply font size
-	add_theme_font_size_override("font_size", GUIResponsive.get_font_size(font_size_category))
+	add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(font_size_category))
 	
 	# Apply minimum size
-	custom_minimum_size = GUIResponsive.get_min_size("button")
+	custom_minimum_size = GUIResponsiveSingleton.get_min_size("button")
 
 ## Fade in the button
 func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
@@ -102,8 +115,8 @@ func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
 	if duration < 0:
 		duration = fade_in_duration
 		
-	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
-	GUIFadeAnimation.fade_in(self, duration, easing, delay)
+	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
+	GUIFadeAnimationSingleton.fade_in(self, duration, easing, delay)
 
 ## Fade out the button
 func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool = true) -> void:
@@ -115,8 +128,8 @@ func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool =
 	if duration < 0:
 		duration = fade_out_duration
 		
-	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
-	GUIFadeAnimation.fade_out(self, duration, easing, delay, hide_when_done)
+	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
+	GUIFadeAnimationSingleton.fade_out(self, duration, easing, delay, hide_when_done)
 
 ## Show the button with fade if enabled
 func show_with_fade(duration: float = -1.0, delay: float = 0.0) -> void:
@@ -128,9 +141,17 @@ func hide_with_fade(duration: float = -1.0, delay: float = 0.0) -> void:
 
 # Private methods
 func _setup_audio_player() -> void:
+	# Check if we already have an audio player
+	if _audio_player:
+		return
+		
 	_audio_player = AudioStreamPlayer.new()
 	_audio_player.bus = "UI" if AudioServer.get_bus_index("UI") >= 0 else "Master"
 	add_child(_audio_player)
+	
+	# This is crucial for proper serialization
+	if Engine.is_editor_hint() and owner:
+		_audio_player.owner = owner
 
 func _on_mouse_entered() -> void:
 	if not use_hover_effect:
@@ -181,4 +202,16 @@ func _on_pressed() -> void:
 	# Play click sound if enabled
 	if use_sounds and click_sound and _audio_player:
 		_audio_player.stream = click_sound
-		_audio_player.play() 
+		_audio_player.play()
+
+# This is called when the node is about to be removed from the scene
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		# Clean up any resources
+		if _hover_tween and _hover_tween.is_valid():
+			_hover_tween.kill()
+	elif what == NOTIFICATION_EXIT_TREE:
+		# Disconnect signals to prevent memory leaks
+		if get_tree() and get_tree().root and use_responsive_sizing:
+			if get_tree().root.size_changed.is_connected(apply_responsive_settings):
+				get_tree().root.size_changed.disconnect(apply_responsive_settings) 

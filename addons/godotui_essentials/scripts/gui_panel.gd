@@ -38,6 +38,15 @@ var _shadow_stylebox: StyleBoxFlat
 var _panel_stylebox: StyleBoxFlat
 var _original_modulate: Color
 
+func _enter_tree():
+	# This is crucial for proper serialization in the editor
+	if Engine.is_editor_hint():
+		# Make sure all children have the proper owner
+		if owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
+
 func _ready():
 	# Store original modulate
 	_original_modulate = modulate
@@ -58,7 +67,8 @@ func _ready():
 	# Apply responsive settings if enabled
 	if use_responsive_sizing and not Engine.is_editor_hint():
 		apply_responsive_settings()
-		get_tree().root.size_changed.connect(apply_responsive_settings)
+		if not get_tree().root.size_changed.is_connected(apply_responsive_settings):
+			get_tree().root.size_changed.connect(apply_responsive_settings)
 	
 	# If fade animations are enabled, start invisible if not in editor
 	if use_fade_animations and not Engine.is_editor_hint():
@@ -107,7 +117,7 @@ func apply_responsive_settings() -> void:
 		return
 		
 	# Scale border width and corner radius based on screen size
-	var scale_factor = GUIResponsive.get_scale_factor()
+	var scale_factor = GUIResponsiveSingleton.get_scale_factor()
 	var scaled_border_width = int(max(1, border_width * scale_factor))
 	var scaled_corner_radius = int(max(0, corner_radius * scale_factor))
 	
@@ -139,8 +149,8 @@ func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
 	if duration < 0:
 		duration = fade_in_duration
 		
-	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
-	GUIFadeAnimation.fade_in(self, duration, easing, delay)
+	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
+	GUIFadeAnimationSingleton.fade_in(self, duration, easing, delay)
 
 ## Fade out the panel
 func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool = true) -> void:
@@ -152,8 +162,8 @@ func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool =
 	if duration < 0:
 		duration = fade_out_duration
 		
-	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
-	GUIFadeAnimation.fade_out(self, duration, easing, delay, hide_when_done)
+	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
+	GUIFadeAnimationSingleton.fade_out(self, duration, easing, delay, hide_when_done)
 
 ## Show the panel with fade if enabled
 func show_with_fade(duration: float = -1.0, delay: float = 0.0) -> void:
@@ -236,13 +246,20 @@ func _update_panel_style() -> void:
 			panel_content.add_theme_stylebox_override("panel", _panel_stylebox)
 			add_child(panel_content)
 			
+			# This is crucial for proper serialization
+			if Engine.is_editor_hint() and owner:
+				panel_content.owner = owner
+			
 			# Move all existing children to the panel content
 			for i in range(get_child_count() - 1, -1, -1):
 				var child = get_child(i)
 				if child != panel_content:
 					remove_child(child)
 					panel_content.add_child(child)
-					child.owner = panel_content
+					
+					# This is crucial for proper serialization
+					if Engine.is_editor_hint() and owner:
+						child.owner = owner
 			
 			# Apply the shadow offset
 			panel_content.set_deferred("position", -shadow_offset)
@@ -256,13 +273,33 @@ func _update_panel_style() -> void:
 				var child = panel_content.get_child(i)
 				panel_content.remove_child(child)
 				add_child(child)
-				child.owner = self
+				
+				# This is crucial for proper serialization
+				if Engine.is_editor_hint() and owner:
+					child.owner = owner
 			
 			# Remove the panel content
 			panel_content.queue_free()
 		
 		# Apply the panel stylebox directly
 		add_theme_stylebox_override("panel", _panel_stylebox)
+
+# This is called when the node is about to be removed from the scene
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		# Clean up any resources
+		pass
+	elif what == NOTIFICATION_EXIT_TREE:
+		# Disconnect signals to prevent memory leaks
+		if get_tree() and get_tree().root and use_responsive_sizing:
+			if get_tree().root.size_changed.is_connected(apply_responsive_settings):
+				get_tree().root.size_changed.disconnect(apply_responsive_settings)
+	elif what == NOTIFICATION_CHILD_ORDER_CHANGED:
+		# When child order changes, make sure all children have the proper owner
+		if Engine.is_editor_hint() and owner:
+			for child in get_children():
+				if child.owner != owner:
+					child.owner = owner
 
 # Property change handlers
 func _set(property, value):

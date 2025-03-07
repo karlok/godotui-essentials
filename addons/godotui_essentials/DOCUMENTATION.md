@@ -15,7 +15,7 @@ GodotUI Essentials is designed for Godot 4.3+ and takes advantage of the latest 
 
 | GodotUI Version | Compatible Godot Versions | Notes |
 |-----------------|---------------------------|-------|
-| 1.0.1           | 4.3+                     | Initial release |
+| 1.0.4           | 4.3+                      | Initial release |
 
 #### Compatibility Notes:
 - This add-on will **not** work with Godot 3.x
@@ -771,8 +771,6 @@ func _ready():
   1. Use `GUIResponsiveSingleton.set_safe_size(control, size)` and `GUIResponsiveSingleton.set_safe_position(control, position)` when setting size/position on controls with anchors
   2. Or use `control.set_deferred("size", size)` and `control.set_deferred("position", position)` directly
   3. When possible, use layout containers (VBoxContainer, HBoxContainer, etc.) instead of manually setting sizes
-  
-  **Note about editor warnings**: You might still see this warning when adding components in the editor. This is normal and won't affect runtime behavior. The warning appears because the editor is detecting that you're resizing a control that has non-equal anchors. You can safely ignore these warnings when working in the editor.
 
 #### Responsive Design Not Working
 - **Issue**: UI elements don't adapt to different screen sizes.
@@ -835,3 +833,51 @@ var label = Label.new()
 GUIResponsive.apply_font_size(label, "body")
 panel.add_child(label)
 ```
+
+## Test Scenes and Debugging Tools
+
+GodotUI Essentials includes a set of test scenes and debugging tools to help you understand how the components work together and to diagnose any issues you might encounter.
+
+### Test Scenes Directory
+
+The `test_scenes` directory contains several scripts and scenes that demonstrate how to use the components and help with debugging:
+
+#### `test_all_components.gd`
+
+This EditorScript creates a comprehensive test scene containing all GodotUI components (GUIPanel, GUIButton, GUIDialog, and GUITooltip). It demonstrates:
+
+- How to create components programmatically
+- How to properly set up parent-child relationships
+- How to ensure proper serialization by setting the correct owner
+
+To use this script:
+1. Open the Script Editor in Godot
+2. Open `test_all_components.gd`
+3. Click the "Run" button at the top of the editor
+4. The script will create a new scene with all components and open it in the editor
+
+#### `debug_script.gd`
+
+This EditorScript helps diagnose issues with component hierarchies. It:
+
+- Finds all GUIPanel nodes in the current scene
+- Prints detailed information about each panel and its children
+- Adds a new GUIButton to each panel for testing
+
+This is useful when you need to understand the structure of your UI or diagnose serialization issues.
+
+#### `cleanup_script.gd`
+
+This EditorScript helps identify and remove orphaned nodes in your scene. It:
+
+- Finds all nodes in the current scene
+- Identifies any orphaned buttons (buttons that are visible but not properly in the scene hierarchy)
+- Removes these orphaned nodes
+
+This can be helpful if you encounter issues with nodes that appear in the editor but aren't properly saved with the scene.
+
+### Using the Test Scripts
+
+These scripts are primarily intended for development and debugging purposes. They can be run directly from the Godot Script Editor by opening them and clicking the "Run" button.
+
+If you're experiencing issues with GodotUI components, these scripts can help diagnose and fix common problems. They also serve as examples of how to work with GodotUI components programmatically.
