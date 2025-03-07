@@ -854,7 +854,7 @@ The `test_scenes` directory contains several scripts and scenes that demonstrate
 
 #### `test_all_components.gd`
 
-This EditorScript creates a comprehensive test scene containing all GodotUI components (GUIPanel, GUIButton, GUIDialog, and GUITooltip). It demonstrates:
+This EditorScript creates a comprehensive test scene containing all GodotUI components (GUIPanel, GUIButton, and GUIDialog). It demonstrates:
 
 - How to create components programmatically
 - How to properly set up parent-child relationships
