@@ -111,59 +111,37 @@ func set_preset_style(preset_name: String) -> void:
 	
 	_update_panel_style()
 
-## Apply responsive settings based on screen size
+## Apply responsive settings based on viewport size
 func apply_responsive_settings() -> void:
 	if not use_responsive_sizing:
 		return
 		
-	# Scale border width and corner radius based on screen size
-	var scale_factor = GUIResponsiveSingleton.get_scale_factor()
-	var scaled_border_width = int(max(1, border_width * scale_factor))
-	var scaled_corner_radius = int(max(0, corner_radius * scale_factor))
-	
-	# Update the styleboxes with scaled values
-	if _panel_stylebox:
-		_panel_stylebox.border_width_left = scaled_border_width
-		_panel_stylebox.border_width_top = scaled_border_width
-		_panel_stylebox.border_width_right = scaled_border_width
-		_panel_stylebox.border_width_bottom = scaled_border_width
-		
-		if border_style == BorderStyle.ROUNDED:
-			_panel_stylebox.corner_radius_top_left = scaled_corner_radius
-			_panel_stylebox.corner_radius_top_right = scaled_corner_radius
-			_panel_stylebox.corner_radius_bottom_left = scaled_corner_radius
-			_panel_stylebox.corner_radius_bottom_right = scaled_corner_radius
-	
-	if use_shadow and _shadow_stylebox:
-		_shadow_stylebox.corner_radius_top_left = scaled_corner_radius
-		_shadow_stylebox.corner_radius_top_right = scaled_corner_radius
-		_shadow_stylebox.corner_radius_bottom_left = scaled_corner_radius
-		_shadow_stylebox.corner_radius_bottom_right = scaled_corner_radius
+	# Apply minimum size based on screen size
+	custom_minimum_size = GUIResponsive.get_min_size("panel")
 
 ## Fade in the panel
 func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
 	if not use_fade_animations:
-		visible = true
+		modulate.a = 1.0
 		return
 		
 	if duration < 0:
 		duration = fade_in_duration
 		
-	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
-	GUIFadeAnimationSingleton.fade_in(self, duration, easing, delay)
+	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
+	GUIFadeAnimation.fade_in(self, duration, easing, delay)
 
 ## Fade out the panel
-func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool = true) -> void:
+func fade_out(duration: float = -1.0, delay: float = 0.0) -> void:
 	if not use_fade_animations:
-		if hide_when_done:
-			visible = false
+		modulate.a = 0.0
 		return
 		
 	if duration < 0:
 		duration = fade_out_duration
 		
-	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
-	GUIFadeAnimationSingleton.fade_out(self, duration, easing, delay, hide_when_done)
+	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
+	GUIFadeAnimation.fade_out(self, duration, easing, delay)
 
 ## Show the panel with fade if enabled
 func show_with_fade(duration: float = -1.0, delay: float = 0.0) -> void:

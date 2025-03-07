@@ -1,26 +1,23 @@
 @tool
 extends EditorPlugin
 
-const GUIPaths = preload("res://addons/godotui_essentials/scripts/gui_paths.gd")
+# Preload the GUIPaths script to access paths
+var GUIPaths = preload("res://addons/godotui_essentials/scripts/gui_paths.gd")
 
-func _enter_tree():
+func _enter_tree() -> void:
 	# Register autoload singletons with different names to avoid conflicts with class_name
-	add_autoload_singleton("GUIPathsSingleton", GUIPaths.SCRIPTS_PATH + "/gui_paths.gd")
-	add_autoload_singleton("GUIResponsiveSingleton", GUIPaths.RESPONSIVE_SCRIPT)
-	add_autoload_singleton("GUIFadeAnimationSingleton", GUIPaths.FADE_ANIMATION_SCRIPT)
-	
-	# Note: GUITypeOnEffect is registered as an autoload primarily for convenience -
-	# it makes the class globally accessible without having to preload it every time.
-	# Unlike other singletons, it's designed to be instantiated multiple times (once per text element).
-	add_autoload_singleton("GUITypeOnEffectSingleton", GUIPaths.TYPE_ON_EFFECT_SCRIPT)
+	add_autoload_singleton("GUIPathsSingleton", "res://addons/godotui_essentials/scripts/gui_paths.gd")
+	add_autoload_singleton("GUIResponsiveSingleton", "res://addons/godotui_essentials/scripts/gui_responsive.gd")
+	add_autoload_singleton("GUIFadeAnimationSingleton", "res://addons/godotui_essentials/scripts/gui_fade_animation.gd")
+	add_autoload_singleton("GUITypeOnEffectSingleton", "res://addons/godotui_essentials/scripts/gui_type_on_effect.gd")
 	
 	# Register custom types
-	add_custom_type("GUIButton", "Button", preload(GUIPaths.BUTTON_SCRIPT), preload(GUIPaths.BUTTON_ICON))
-	add_custom_type("GUIPanel", "Panel", preload(GUIPaths.PANEL_SCRIPT), preload(GUIPaths.PANEL_ICON))
-	add_custom_type("GUIDialog", "Control", preload(GUIPaths.DIALOG_SCRIPT), preload(GUIPaths.DIALOG_ICON))
-	add_custom_type("GUITooltip", "Control", preload(GUIPaths.TOOLTIP_SCRIPT), preload(GUIPaths.TOOLTIP_ICON))
+	add_custom_type("GUIButton", "Button", preload("res://addons/godotui_essentials/scripts/gui_button.gd"), preload("res://addons/godotui_essentials/art/button_icon.svg"))
+	add_custom_type("GUIPanel", "Panel", preload("res://addons/godotui_essentials/scripts/gui_panel.gd"), preload("res://addons/godotui_essentials/art/panel_icon.svg"))
+	add_custom_type("GUIDialog", "Control", preload("res://addons/godotui_essentials/scripts/gui_dialog.gd"), preload("res://addons/godotui_essentials/art/dialog_icon.svg"))
+	add_custom_type("GUITooltip", "Control", preload("res://addons/godotui_essentials/scripts/gui_tooltip.gd"), preload("res://addons/godotui_essentials/art/tooltip_icon.svg"))
 
-func _exit_tree():
+func _exit_tree() -> void:
 	# Remove autoload singletons
 	remove_autoload_singleton("GUIPathsSingleton")
 	remove_autoload_singleton("GUIResponsiveSingleton")

@@ -66,6 +66,11 @@ var _dragging: bool = false
 var _original_modulate: Color
 var _is_closing: bool = false
 
+# Dragging variables
+var _is_dragging: bool = false
+var _drag_start_position: Vector2
+var _control_start_position: Vector2
+
 func _enter_tree():
 	# This is crucial for proper serialization in the editor
 	if Engine.is_editor_hint():
@@ -296,20 +301,20 @@ func _create_buttons():
 		if button_ids[i] == default_button:
 			button.grab_focus()
 
-func apply_responsive_settings():
+func apply_responsive_settings() -> void:
 	if not use_responsive_sizing:
 		return
 		
 	# Apply font sizes
 	if _title_label:
-		_title_label.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(title_size_category))
+		_title_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(title_size_category))
 	
 	if _message_label:
-		_message_label.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(message_size_category))
+		_message_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(message_size_category))
 	
 	# Apply to buttons
 	for button in _buttons:
-		button.add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(button_size_category))
+		button.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(button_size_category))
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
@@ -399,4 +404,31 @@ static func create_confirmation(parent: Node, title: String, message: String, ok
 	dialog.add_button(ok_text, "ok")
 	dialog.add_button(cancel_text, "cancel")
 	parent.add_child(dialog)
-	return dialog 
+	return dialog
+
+func _on_title_bar_mouse_entered() -> void:
+	if draggable:
+		Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+
+func _on_title_bar_mouse_exited() -> void:
+	if draggable:
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+
+func _on_title_bar_gui_input(event: InputEvent) -> void:
+	if not draggable:
+		return
+		
+	if event is InputEventMouseButton:
+		var mouse_event = event as InputEventMouseButton
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
+			_is_dragging = mouse_event.pressed
+			if _is_dragging:
+				_drag_start_position = get_global_mouse_position()
+				_control_start_position = position
+			else:
+				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+	
+	elif event is InputEventMouseMotion and _is_dragging:
+		var mouse_position = get_global_mouse_position()
+		var delta = mouse_position - _drag_start_position
+		position = _control_start_position + delta 

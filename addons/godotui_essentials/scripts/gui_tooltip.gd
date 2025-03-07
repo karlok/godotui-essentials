@@ -50,8 +50,10 @@ var _show_timer: Timer
 var _hide_timer: Timer
 var _mouse_inside: bool = false
 var _original_modulate: Color
+var _margin: MarginContainer
+var _margin_size: float = 8.0
 
-func _enter_tree():
+func _enter_tree() -> void:
 	# This is crucial for proper serialization in the editor
 	if Engine.is_editor_hint():
 		# Make sure all children have the proper owner
@@ -60,7 +62,7 @@ func _enter_tree():
 				if child.owner != owner:
 					child.owner = owner
 
-func _ready():
+func _ready() -> void:
 	# Store original modulate
 	_original_modulate = modulate
 	
@@ -80,7 +82,7 @@ func _ready():
 	# Hide the tooltip initially
 	visible = false
 
-func _setup_tooltip():
+func _setup_tooltip() -> void:
 	# Set minimum size
 	custom_minimum_size = Vector2(min_width, 0)
 	
@@ -110,17 +112,17 @@ func _setup_tooltip():
 	_panel.add_theme_stylebox_override("panel", style_box)
 	
 	# Create a margin container
-	var margin = MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 8)
-	margin.add_theme_constant_override("margin_right", 8)
-	margin.add_theme_constant_override("margin_top", 6)
-	margin.add_theme_constant_override("margin_bottom", 6)
-	_panel.add_child(margin)
+	_margin = MarginContainer.new()
+	_margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_margin.add_theme_constant_override("margin_left", _margin_size)
+	_margin.add_theme_constant_override("margin_right", _margin_size)
+	_margin.add_theme_constant_override("margin_top", _margin_size)
+	_margin.add_theme_constant_override("margin_bottom", _margin_size)
+	_panel.add_child(_margin)
 	
 	# This is crucial for proper serialization
 	if Engine.is_editor_hint() and owner:
-		margin.owner = owner
+		_margin.owner = owner
 	
 	# Create the label for regular text
 	_label = Label.new()
@@ -128,7 +130,7 @@ func _setup_tooltip():
 	_label.add_theme_color_override("font_color", text_color)
 	_label.visible = tooltip_mode == "text"
 	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	margin.add_child(_label)
+	_margin.add_child(_label)
 	
 	# This is crucial for proper serialization
 	if Engine.is_editor_hint() and owner:
@@ -143,7 +145,7 @@ func _setup_tooltip():
 	_rich_label.fit_content = true
 	_rich_label.scroll_active = false
 	_rich_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	margin.add_child(_rich_label)
+	_margin.add_child(_rich_label)
 	
 	# This is crucial for proper serialization
 	if Engine.is_editor_hint() and owner:
@@ -171,7 +173,7 @@ func _setup_tooltip():
 	# Set initial size
 	_update_size()
 
-func _process(delta):
+func _process(delta: float) -> void:
 	# Update position if following mouse
 	if visible and follow_mouse and _target:
 		var mouse_pos = _target.get_global_mouse_position()
@@ -189,7 +191,7 @@ func _process(delta):
 		
 		global_position = tooltip_pos
 
-func _update_size():
+func _update_size() -> void:
 	if not auto_size:
 		return
 	
@@ -213,23 +215,29 @@ func _update_size():
 		custom_minimum_size = _rich_label.size
 		size = custom_minimum_size
 
-func apply_responsive_settings():
+func apply_responsive_settings() -> void:
 	if not use_responsive_sizing:
 		return
 		
-	# Apply font size
-	var font_size = GUIResponsiveSingleton.get_font_size(font_size_category)
-	
+	# Apply font sizes
 	if _label:
-		_label.add_theme_font_size_override("font_size", font_size)
+		_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(font_size_category))
 	
 	if _rich_label:
-		_rich_label.add_theme_font_size_override("normal_font_size", font_size)
+		_rich_label.add_theme_font_size_override("normal_font_size", GUIResponsive.get_font_size(font_size_category))
 	
-	# Update size after changing font size
-	_update_size()
+	# Apply minimum size
+	custom_minimum_size = GUIResponsive.get_min_size("tooltip")
+	
+	# Update the margin container margins
+	if _margin:
+		var margin_value = int(GUIResponsive.get_scale_factor() * _margin_size)
+		_margin.add_theme_constant_override("margin_left", margin_value)
+		_margin.add_theme_constant_override("margin_top", margin_value)
+		_margin.add_theme_constant_override("margin_right", margin_value)
+		_margin.add_theme_constant_override("margin_bottom", margin_value)
 
-func _notification(what):
+func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		# Clean up any resources
 		pass
@@ -336,37 +344,6 @@ func set_style(bg_color: Color, border_col: Color, txt_color: Color) -> void:
 	if _rich_label:
 		_rich_label.add_theme_color_override("default_color", txt_color)
 
-## Apply responsive settings based on screen size
-func apply_responsive_settings() -> void:
-	if not use_responsive_sizing:
-		return
-		
-	# Apply font sizes
-	if _label:
-		_label.add_theme_font_size_override("font_size", GUIResponsive.get_font_size(font_size_category))
-	
-	if _rich_label:
-		_rich_label.add_theme_font_size_override("normal_font_size", GUIResponsive.get_font_size(font_size_category))
-	
-	# Scale min/max width based on screen size
-	var scale_factor = GUIResponsive.get_scale_factor()
-	var scaled_min_width = int(min_width * scale_factor)
-	var scaled_max_width = int(max_width * scale_factor)
-	
-	# Apply scaled values
-	if auto_size:
-		if min_width > 0:
-			min_width = scaled_min_width
-		if max_width > 0:
-			max_width = scaled_max_width
-	else:
-		custom_minimum_size.x = scaled_min_width
-	
-	# Update size and position
-	if visible:
-		_update_size()
-		_update_position()
-
 ## Fade in the tooltip
 func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
 	if not use_fade_animations:
@@ -398,3 +375,23 @@ static func create_for_control(parent: Node, target: Control, tooltip_text: Stri
 	parent.add_child(tooltip)
 	tooltip.attach_to(target)
 	return tooltip 
+
+## Update the tooltip position based on the target and mouse position
+func _update_position() -> void:
+	if not _target or not follow_mouse:
+		return
+		
+	var mouse_pos = _target.get_global_mouse_position()
+	var tooltip_pos = mouse_pos + offset
+	
+	# Ensure the tooltip stays within the viewport
+	var viewport_rect = get_viewport_rect().size
+	var tooltip_size = size
+	
+	if tooltip_pos.x + tooltip_size.x > viewport_rect.x:
+		tooltip_pos.x = mouse_pos.x - tooltip_size.x - offset.x
+	
+	if tooltip_pos.y + tooltip_size.y > viewport_rect.y:
+		tooltip_pos.y = mouse_pos.y - tooltip_size.y - offset.y
+	
+	global_position = tooltip_pos 

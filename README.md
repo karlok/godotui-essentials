@@ -2,6 +2,12 @@
 
 A work-in-progress, simple, lightweight add-on for Godot 4.3+ that provides ready-to-use UI components and placeholder art for 2D game development. (Briefly tested with Godot 4.4, and it seems to work; made some changes to eliminate some warnings, etc. Documentation is updated accordingly.)
 
+***Note:*** I am seeing warnings in the console when adding nodes from this addon. I am still working to address this issue:
+```bash
+  WARNING: scene/gui/control.cpp:1443 - Nodes with non-equal opposite anchors will have their size overridden after _ready(). 
+  WARNING: If you want to set size, change the anchors or consider using set_deferred().
+```
+
 ## Features
 
 - **Basic UI Components**: Pre-configured buttons, panels, dialogs, menus, and tooltips

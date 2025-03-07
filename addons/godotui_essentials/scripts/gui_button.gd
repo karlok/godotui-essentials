@@ -95,41 +95,40 @@ func disable_effects() -> void:
 	use_hover_effect = false
 	use_sounds = false
 
-## Apply responsive settings based on screen size
+## Apply responsive settings based on viewport size
 func apply_responsive_settings() -> void:
 	if not use_responsive_sizing:
 		return
 		
 	# Apply font size
-	add_theme_font_size_override("font_size", GUIResponsiveSingleton.get_font_size(font_size_category))
+	add_theme_font_size_override("font_size", GUIResponsive.get_font_size(font_size_category))
 	
 	# Apply minimum size
-	custom_minimum_size = GUIResponsiveSingleton.get_min_size("button")
+	custom_minimum_size = GUIResponsive.get_min_size("button")
 
 ## Fade in the button
 func fade_in(duration: float = -1.0, delay: float = 0.0) -> void:
 	if not use_fade_animations:
-		visible = true
+		modulate.a = 1.0
 		return
 		
 	if duration < 0:
 		duration = fade_in_duration
 		
-	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
-	GUIFadeAnimationSingleton.fade_in(self, duration, easing, delay)
+	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
+	GUIFadeAnimation.fade_in(self, duration, easing, delay)
 
 ## Fade out the button
-func fade_out(duration: float = -1.0, delay: float = 0.0, hide_when_done: bool = true) -> void:
+func fade_out(duration: float = -1.0, delay: float = 0.0) -> void:
 	if not use_fade_animations:
-		if hide_when_done:
-			visible = false
+		modulate.a = 0.0
 		return
 		
 	if duration < 0:
 		duration = fade_out_duration
 		
-	var easing = GUIFadeAnimationSingleton.EasingType.values()[fade_easing]
-	GUIFadeAnimationSingleton.fade_out(self, duration, easing, delay, hide_when_done)
+	var easing = GUIFadeAnimation.EasingType.values()[fade_easing]
+	GUIFadeAnimation.fade_out(self, duration, easing, delay)
 
 ## Show the button with fade if enabled
 func show_with_fade(duration: float = -1.0, delay: float = 0.0) -> void:
