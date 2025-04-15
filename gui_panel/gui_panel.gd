@@ -3,7 +3,7 @@ class_name GUIPanel
 
 @onready var content := $MarginContainer/Content
 
-@export var background_color: Color = Color(0.1, 0.1, 0.1, 0.8) : set = set_background_color
+#@export var background_color: Color = Color(0.1, 0.1, 0.1, 0.8) : set = set_background_color
 
 func _ready():
 	# Ensure this panel stretches to almost fill its parent
@@ -11,21 +11,31 @@ func _ready():
 	anchor_top = 0.1
 	anchor_right = 0.9
 	anchor_bottom = 0.9
-	set_background_color(background_color)
+	#set_background_color(background_color)
 
 func set_background_color(color: Color) -> void:
 	var style = StyleBoxFlat.new()
 	style.bg_color = color
 	add_theme_stylebox_override("panel", style)
+	
+func set_border_style(color: Color, width: int) -> void:
+	var style = StyleBoxFlat.new()
+	style.border_color = color
+	style.set_border_width_all(width)
+	add_theme_stylebox_override("panel", style)
 
 func add_label(text: String) -> Label:
 	var label = _GUIPaths.GUILabelScene.instantiate()
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	label.custom_minimum_size.x = 300  # Keeps it from shrinking too much
 	label.text = text
 	content.add_child(label)
 	return label
 
 func add_button(text: String, callback: Callable = Callable()) -> Button:
 	var button = _GUIPaths.GUIButtonScene.instantiate()
+	button.custom_minimum_size.x = 200
 	button.text = text
 	if callback.is_valid():
 		button.pressed.connect(callback)

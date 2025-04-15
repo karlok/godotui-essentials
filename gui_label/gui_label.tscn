@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://dr8u28tcy57bt"]
+[gd_scene load_steps=2 format=3 uid="uid://dr8u28tcy57bt"]
+
+[ext_resource type="Script" uid="uid://dlyjafb8evep4" path="res://addons/gui_essentials/gui_label/gui_label.gd" id="1_bji84"]
 
 [node name="GuiLabel" type="Label"]
+script = ExtResource("1_bji84")

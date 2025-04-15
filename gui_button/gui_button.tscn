@@ -1,8 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c7ar6bcp8c28c"]
 
-[sub_resource type="GDScript" id="GDScript_fnmkx"]
-script/source = "extends Button
-"
+[ext_resource type="Script" uid="uid://dfgtamqdmsu7b" path="res://addons/gui_essentials/gui_button/gui_button.gd" id="1_pwwhh"]
 
 [node name="GuiButton" type="Button"]
-script = SubResource("GDScript_fnmkx")
+script = ExtResource("1_pwwhh")
