@@ -3,7 +3,7 @@ class_name GUIPanel
 
 @onready var content := $MarginContainer/Content
 
-#@export var background_color: Color = Color(0.1, 0.1, 0.1, 0.8) : set = set_background_color
+var _style := StyleBoxFlat.new()
 
 func _ready():
 	# Ensure this panel stretches to almost fill its parent
@@ -14,15 +14,13 @@ func _ready():
 	#set_background_color(background_color)
 
 func set_background_color(color: Color) -> void:
-	var style = StyleBoxFlat.new()
-	style.bg_color = color
-	add_theme_stylebox_override("panel", style)
+	_style.bg_color = color
+	add_theme_stylebox_override("panel", _style)
 	
 func set_border_style(color: Color, width: int) -> void:
-	var style = StyleBoxFlat.new()
-	style.border_color = color
-	style.set_border_width_all(width)
-	add_theme_stylebox_override("panel", style)
+	_style.border_color = color
+	_style.set_border_width_all(width)
+	add_theme_stylebox_override("panel", _style)
 
 func add_label(text: String) -> Label:
 	var label = _GUIPaths.GUILabelScene.instantiate()
