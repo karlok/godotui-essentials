@@ -9,18 +9,26 @@ var hud_panel = _GUIPaths.GUIPanelScene.instantiate()
 
 func _ready():
 	panel.set_background_color(Color.BLUE_VIOLET) # or define custom color `Color(0.1, 1.0, 0.1, 1.0)`
-	panel.set_border_style(Color.BLACK, 3)
+	panel.set_border_style({
+		"color": Color.BLACK,
+		"width": 4,
+		"corner_radius": 12
+	})
+	
 	$CanvasLayer.add_child(panel)
+	
 	var label = panel.add_label("", { # set up label for type on animation
 		"font": font,
 		"font_color": Color.SKY_BLUE,
 		"size": Vector2(300, 40)
 	})
+	
 	panel.add_button("Start", start_game, { # can also define anonymous func in call: `func(): print("Game started!")`
 		"font": font,
 		"font_color": Color.GREEN_YELLOW,
 		"size": Vector2(300, 60)
 	})
+	
 	panel.fade_in()
 	
 	# show label with effect

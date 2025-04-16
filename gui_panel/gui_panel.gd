@@ -83,9 +83,24 @@ func set_background_color(color: Color) -> void:
 	_style.bg_color = color
 	add_theme_stylebox_override("panel", _style)
 	
-func set_border_style(color: Color, width: int) -> void:
-	_style.border_color = color
-	_style.set_border_width_all(width)
+func set_border_style(options: Dictionary) -> void:
+	if options.has("color"):
+		_style.border_color = options["color"]
+	if options.has("width"):
+		_style.set_border_width_all(options["width"])
+	if options.has("corner_radius"):
+		_style.corner_radius_top_left = options["corner_radius"]
+		_style.corner_radius_top_right = options["corner_radius"]
+		_style.corner_radius_bottom_left = options["corner_radius"]
+		_style.corner_radius_bottom_right = options["corner_radius"]
+	
+	add_theme_stylebox_override("panel", _style)
+
+func set_corner_radius(radius: int):
+	_style.corner_radius_top_left = radius
+	_style.corner_radius_top_right = radius
+	_style.corner_radius_bottom_left = radius
+	_style.corner_radius_bottom_right = radius
 	add_theme_stylebox_override("panel", _style)
 
 func show_panel():
