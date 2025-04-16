@@ -9,6 +9,7 @@ var hud_panel = _GUIPaths.GUIPanelScene.instantiate()
 
 func _ready():
 	panel.set_background_color(Color.BLUE_VIOLET) # or define custom color `Color(0.1, 1.0, 0.1, 1.0)`
+	panel.set_size_percentage(0.8, 0.7) # 80% of viewport width, 70% of viewport height
 	panel.set_border_style({
 		"color": Color.BLACK,
 		"width": 4,
@@ -16,7 +17,7 @@ func _ready():
 	})
 	
 	$CanvasLayer.add_child(panel)
-	
+
 	var label = panel.add_label("", { # set up label for type on animation
 		"font": font,
 		"font_color": Color.SKY_BLUE,

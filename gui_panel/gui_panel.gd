@@ -7,6 +7,10 @@ class_name GUIPanel
 
 var _style := StyleBoxFlat.new()
 
+# store user set percentage size to apply after viewport is available
+var _percent_width := -1.0
+var _percent_height := -1.0
+
 enum PanelPlacement {
 	CENTER,
 	TOP,
@@ -20,7 +24,7 @@ enum PanelPlacement {
 func _ready():
 	if !has_node("MarginContainer/Content"):
 		push_warning("GUIPanel is missing a 'Content' node. Add a VBoxContainer named 'Content' in the scene.")
-	
+		
 	# place the panel
 	match placement:
 		PanelPlacement.CENTER:
@@ -78,6 +82,8 @@ func _ready():
 	
 	if panel_size != Vector2.ZERO:
 		custom_minimum_size = panel_size
+	elif _percent_width > 0 and _percent_height > 0:
+		_update_size_from_percent()
 	
 func set_background_color(color: Color) -> void:
 	_style.bg_color = color
@@ -95,6 +101,22 @@ func set_border_style(options: Dictionary) -> void:
 		_style.corner_radius_bottom_right = options["corner_radius"]
 	
 	add_theme_stylebox_override("panel", _style)
+
+func set_size_percentage(width_percent: float, height_percent: float) -> void:
+	_percent_width = clamp(width_percent, 0.0, 1.0)
+	_percent_height = clamp(height_percent, 0.0, 1.0)
+
+func _update_size_from_percent():
+	var viewport_size = get_viewport().get_visible_rect().size
+	custom_minimum_size = Vector2(
+		viewport_size.x * _percent_width,
+		viewport_size.y * _percent_height)
+			
+#func set_size_percentage(width_percent: float, height_percent: float) -> void:
+	#var viewport_size = get_viewport().get_visible_rect().size
+	#custom_minimum_size = Vector2(
+		#viewport_size.x * clamp(width_percent, 0.0, 1.0),
+		#viewport_size.y * clamp(height_percent, 0.0, 1.0))
 
 func set_corner_radius(radius: int):
 	_style.corner_radius_top_left = radius
