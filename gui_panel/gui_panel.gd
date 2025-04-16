@@ -6,7 +6,6 @@ class_name GUIPanel
 
 var _style := StyleBoxFlat.new()
 
-enum SlideDirection { LEFT, RIGHT, TOP, BOTTOM }
 enum PanelPlacement {
 	CENTER,
 	TOP,
@@ -101,26 +100,6 @@ func fade_out(duration := 0.5):
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, duration)
 	tween.tween_callback(hide)
-
-func slide_in_from(direction: SlideDirection, distance := 100, duration := 0.5):
-	var offset = _get_slide_vector(direction, distance)
-	position += offset
-	show()
-	create_tween().tween_property(self, "position", position - offset, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-func slide_out_to(direction: SlideDirection, distance := 100, duration := 0.5):
-	var offset = _get_slide_vector(direction, distance)
-	var tween = create_tween()
-	tween.tween_property(self, "position", position + offset, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tween.tween_callback(hide)
-
-func _get_slide_vector(direction: SlideDirection, distance: float) -> Vector2:
-	match direction:
-		SlideDirection.LEFT: return Vector2(-distance, 0)
-		SlideDirection.RIGHT: return Vector2(distance, 0)
-		SlideDirection.TOP: return Vector2(0, -distance)
-		SlideDirection.BOTTOM: return Vector2(0, distance)
-	return Vector2.ZERO
 	
 ### --- add ui elements
 func add_label(text: String) -> Label:
