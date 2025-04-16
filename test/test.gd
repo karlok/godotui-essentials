@@ -1,5 +1,6 @@
 extends Node2D
 
+# Look in the `fonts`directory for all your build-in font options, or add more .ttf files if needed
 var font := preload("res://addons/gui_essentials/fonts/Orbitron-Medium.ttf")
 
 # Use _GUIPaths to create a panel
