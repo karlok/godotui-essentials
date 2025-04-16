@@ -3,6 +3,7 @@ class_name GUIPanel
 
 @onready var content := $MarginContainer/Content
 @export var placement: PanelPlacement = PanelPlacement.CENTER
+@export var panel_size: Vector2 = Vector2.ZERO
 
 var _style := StyleBoxFlat.new()
 
@@ -19,7 +20,7 @@ enum PanelPlacement {
 func _ready():
 	if !has_node("MarginContainer/Content"):
 		push_warning("GUIPanel is missing a 'Content' node. Add a VBoxContainer named 'Content' in the scene.")
-		
+	
 	# place the panel
 	match placement:
 		PanelPlacement.CENTER:
@@ -74,6 +75,9 @@ func _ready():
 	offset_top = 0
 	offset_right = 0
 	offset_bottom = 0
+	
+	if panel_size != Vector2.ZERO:
+		custom_minimum_size = panel_size
 	
 func set_background_color(color: Color) -> void:
 	_style.bg_color = color

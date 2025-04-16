@@ -17,7 +17,8 @@ func _ready():
 	
 	# create HUD panel
 	hud_panel.placement = GUIPanel.PanelPlacement.TOP_RIGHT
-	hud_panel.set_background_color(Color.TRANSPARENT)
+	hud_panel.set_background_color(Color.DARK_BLUE)
+	hud_panel.panel_size = Vector2(200, 44)
 	$CanvasLayer.add_child(hud_panel)
 	hud_panel.add_label("Score: 0")
 	hud_panel.fade_in()
