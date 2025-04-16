@@ -106,12 +106,18 @@ func fade_out(duration := 0.5):
 	tween.tween_callback(hide)
 	
 ### --- add ui elements
-func add_label(text: String) -> Label:
+func add_label(text: String, options: Dictionary = {}) -> Label:
 	var label = _GUIPaths.GUILabelScene.instantiate()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	label.custom_minimum_size = Vector2(200, 44)
 	label.text = text
+	
+	# Optional overrides
+	if options.has("font"):
+		label.add_theme_font_override("font", options["font"])
+	if options.has("font_color"):
+		label.add_theme_color_override("font_color", options["font_color"])
 
 	# Defer to next frame to ensure layout is ready
 	call_deferred("_add_label_to_content", label)
@@ -123,10 +129,22 @@ func _add_label_to_content(label: Label):
 		return
 	content.add_child(label)
 
-func add_button(text: String, callback: Callable = Callable()) -> Button:
+func add_button(text: String, callback: Callable = Callable(), options: Dictionary = {}) -> Button:
 	var button = _GUIPaths.GUIButtonScene.instantiate()
 	button.text = text
-	button.custom_minimum_size.x = 200
+	#button.custom_minimum_size.x = 200
+	
+	# Optional overrides
+	if options.has("font"):
+		button.add_theme_font_override("font", options["font"])
+	if options.has("font_color"):
+		button.add_theme_color_override("font_color", options["font_color"])
+	
+	if options.has("size"):
+		button.custom_minimum_size = options["size"]
+	else:
+		button.custom_minimum_size = Vector2(200, 44)  # default fallback
+		
 	if callback.is_valid():
 		button.pressed.connect(callback)
 
