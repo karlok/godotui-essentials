@@ -2,21 +2,80 @@ extends Panel
 class_name GUIPanel
 
 @onready var content := $MarginContainer/Content
+@export var placement: PanelPlacement = PanelPlacement.CENTER
 
 var _style := StyleBoxFlat.new()
 
 enum SlideDirection { LEFT, RIGHT, TOP, BOTTOM }
+enum PanelPlacement {
+	CENTER,
+	TOP,
+	BOTTOM,
+	TOP_LEFT,
+	TOP_RIGHT,
+	BOTTOM_LEFT,
+	BOTTOM_RIGHT
+}
 
 func _ready():
-	if !has_node("Content"):
+	if !has_node("MarginContainer/Content"):
 		push_warning("GUIPanel is missing a 'Content' node. Add a VBoxContainer named 'Content' in the scene.")
 		
-	# Ensure this panel stretches to almost fill its parent
-	anchor_left = 0.1
-	anchor_top = 0.1
-	anchor_right = 0.9
-	anchor_bottom = 0.9
+	# place the panel
+	match placement:
+		PanelPlacement.CENTER:
+			anchor_left = 0.25
+			anchor_right = 0.75
+			anchor_top = 0.35
+			anchor_bottom = 0.65
+			offset_left = 0
+			offset_top = 0
+			offset_right = 0
+			offset_bottom = 0
+			custom_minimum_size = Vector2.ZERO
+	
+		PanelPlacement.TOP:
+			anchor_left = 0.25
+			anchor_right = 0.75
+			anchor_top = 0
+			anchor_bottom = 0.2
 
+		PanelPlacement.BOTTOM:
+			anchor_left = 0.25
+			anchor_right = 0.75
+			anchor_top = 0.8
+			anchor_bottom = 1.0
+
+		PanelPlacement.TOP_LEFT:
+			anchor_left = 0
+			anchor_right = 0.3
+			anchor_top = 0
+			anchor_bottom = 0.2
+
+		PanelPlacement.TOP_RIGHT:
+			anchor_left = 0.7
+			anchor_right = 1.0
+			anchor_top = 0
+			anchor_bottom = 0.2
+
+		PanelPlacement.BOTTOM_LEFT:
+			anchor_left = 0
+			anchor_right = 0.3
+			anchor_top = 0.8
+			anchor_bottom = 1.0
+
+		PanelPlacement.BOTTOM_RIGHT:
+			anchor_left = 0.7
+			anchor_right = 1.0
+			anchor_top = 0.8
+			anchor_bottom = 1.0
+
+	# Common offset reset
+	offset_left = 0
+	offset_top = 0
+	offset_right = 0
+	offset_bottom = 0
+	
 func set_background_color(color: Color) -> void:
 	_style.bg_color = color
 	add_theme_stylebox_override("panel", _style)
@@ -65,27 +124,34 @@ func _get_slide_vector(direction: SlideDirection, distance: float) -> Vector2:
 	
 ### --- add ui elements
 func add_label(text: String) -> Label:
-	if !is_instance_valid(content):
-		push_warning("GUIPanel: Missing 'Content' node. Make sure your panel scene has a VBoxContainer named 'Content'.")
-		return Label.new()
-		
 	var label = _GUIPaths.GUILabelScene.instantiate()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	label.custom_minimum_size.x = 300  # Keeps it from shrinking too much
+	label.custom_minimum_size = Vector2(200, 44)
 	label.text = text
-	content.add_child(label)
+
+	# Defer to next frame to ensure layout is ready
+	call_deferred("_add_label_to_content", label)
 	return label
 
-func add_button(text: String, callback: Callable = Callable()) -> Button:
+func _add_label_to_content(label: Label):
 	if !is_instance_valid(content):
-		push_warning("GUIPanel: Missing 'Content' node. Make sure your panel scene has a VBoxContainer named 'Content'.")
-		return Button.new()
-		
+		push_warning("GUIPanel: Content node not found.")
+		return
+	content.add_child(label)
+
+func add_button(text: String, callback: Callable = Callable()) -> Button:
 	var button = _GUIPaths.GUIButtonScene.instantiate()
-	button.custom_minimum_size.x = 200
 	button.text = text
+	button.custom_minimum_size.x = 200
 	if callback.is_valid():
 		button.pressed.connect(callback)
-	content.add_child(button)
+
+	call_deferred("_add_button_to_content", button)
 	return button
+
+func _add_button_to_content(button: Button):
+	if !is_instance_valid(content):
+		push_warning("GUIPanel: Content node not found.")
+		return
+	content.add_child(button)

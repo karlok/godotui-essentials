@@ -4,6 +4,7 @@ extends Label
 @onready var _audio := AudioStreamPlayer.new()
 
 enum TypeOnMode { CHAR, WORD }
+
 const DEFAULT_SOUND := preload("res://addons/gui_essentials/sfx/typing_sound.wav")
 
 func _ready():
@@ -21,7 +22,15 @@ var _word_list := []
 var _word_index := 0
 
 # --- Public function to start the effect
-func type_on(text: String, speed := 0.05, mode: TypeOnMode = TypeOnMode.CHAR):
+func start_type_on_after_ready(text: String, speed := 0.05, mode: TypeOnMode = TypeOnMode.CHAR):
+	if is_inside_tree():
+		_type_on(text, speed, mode)
+	else:
+		await ready
+		_type_on(text, speed, mode)
+		
+# --- Private functions to handle the type on effect
+func _type_on(text: String, speed := 0.05, mode: TypeOnMode = TypeOnMode.CHAR):
 	_typing_mode = mode
 	_target_text = text
 	_char_index = 0

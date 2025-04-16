@@ -75,4 +75,3 @@ panel.slide_in_from_bottom()
 ---
 
 Built for courses, prototypes, and first games. Simple on purpose 💡
-
