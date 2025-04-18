@@ -8,7 +8,13 @@ var panel = _GUIPaths.GUIPanelScene.instantiate()
 var score_panel = _GUIPaths.GUIPanelScene.instantiate()
 var health_panel = _GUIPaths.GUIPanelScene.instantiate()
 
+var health_bar: GUIBar
+var health := 100
+
 func _ready():
+	# setup demo health timer
+	$HealthTimer.timeout.connect(_on_health_timer_timeout)
+	
 	panel.set_background_color(Color.BLUE_VIOLET) # or define custom color `Color(0.1, 1.0, 0.1, 1.0)`
 	panel.set_size_percentage(0.8, 0.7) # 80% of viewport width, 70% of viewport height
 	panel.set_border_style({
@@ -52,7 +58,7 @@ func _ready():
 	health_panel.set_background_color(Color.TRANSPARENT)
 	health_panel.panel_size = Vector2(300, 50)
 	$CanvasLayer.add_child(health_panel)
-	health_panel.add_bar(100, {
+	health_bar = health_panel.add_bar(100, {
 		"size": Vector2(200, 20),
 		"bar_color": Color.LIME_GREEN,
 		"background_color": Color.TRANSPARENT
@@ -62,4 +68,19 @@ func _ready():
 func start_game():
 	print("Game starting!")
 	panel.fade_out()
-	
+
+func _on_health_timer_timeout():
+	health = max(health - 5, 0)
+	health_bar.value = health
+	update_health_bar_color()
+
+func update_health_bar_color():
+	var pct := health / 100.0
+	var color := Color()
+
+	if pct > 0.5:
+		color = Color(1.0 - (pct - 0.5) * 2.0, 1.0, 0.0) # green → yellow
+	else:
+		color = Color(1.0, pct * 2.0, 0.0) # yellow → red
+
+	health_bar.set_fill_color(color)
