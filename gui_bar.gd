@@ -9,19 +9,18 @@ func _ready():
 
 	min_value = 0
 	max_value = 100
-	value = 100  # Use less than 100 so we actually *see* the progress fill
+	value = 100
 
 	var bg = StyleBoxFlat.new()
 	bg.bg_color = background_color
 	bg.border_color = Color.BLACK
 	bg.draw_center = true
 	bg.set_border_width_all(2)
-	bg.set_content_margin_all(4)
 
 	var fg = StyleBoxFlat.new()
 	fg.bg_color = bar_color
 	fg.draw_center = true
-	fg.set_content_margin_all(2)
+	fg.set_expand_margin_all(-min(2, size.y * 0.1))  # Shrinks the visual fill inside
 
 	# ✅ Here's the trick — use `add_theme_stylebox_override`, NOT `set()`
 	add_theme_stylebox_override("background", bg)

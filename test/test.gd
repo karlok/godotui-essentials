@@ -55,7 +55,7 @@ func _ready():
 	health_panel.add_bar(100, {
 		"size": Vector2(200, 20),
 		"bar_color": Color.LIME_GREEN,
-		"background_color": Color.DARK_GRAY
+		"background_color": Color.TRANSPARENT
 	})
 	health_panel.fade_in()
 

@@ -159,9 +159,6 @@ func add_bar(initial_value := 100, options: Dictionary = {}) -> GUIBar:
 	if options.has("background_color"):
 		bar.background_color = options["background_color"]
 
-	# explicitly set bar style AFTER setting all the vars
-	#bar.set_bar_style(bar.bar_color, bar.background_color)
-
 	call_deferred("_add_bar_to_content", bar)
 	return bar
 
