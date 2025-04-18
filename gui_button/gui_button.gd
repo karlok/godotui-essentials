@@ -10,4 +10,16 @@ func _ready():
 	sound.volume_db = -10
 	add_child(sound)
 	
-	pressed.connect(func(): sound.play())
+	pressed.connect(func(): _play_click_sound())
+
+func _play_click_sound():
+	if not is_inside_tree():
+		print("button or sound not inside tree")
+		return
+
+	await get_tree().process_frame
+
+	if is_instance_valid(sound) and sound.is_inside_tree():
+		sound.play()
+	else:
+		print("sound is not valid or sound is not inside tree")

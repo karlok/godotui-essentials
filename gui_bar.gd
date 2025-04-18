@@ -28,8 +28,6 @@ func _ready():
 
 	self.clip_contents = true
 
-	print("✅ GUIBar style applied | fill:", fg.bg_color, ", bg:", bg.bg_color)
-
 func set_fill_color(color: Color):
 	if has_theme_stylebox_override("fill"):
 		var stylebox = get_theme_stylebox("fill") as StyleBoxFlat

@@ -194,27 +194,35 @@ func _add_label_to_content(label: Label):
 func add_button(text: String, callback: Callable = Callable(), options: Dictionary = {}) -> Button:
 	var button = _GUIPaths.GUIButtonScene.instantiate()
 	button.text = text
-	#button.custom_minimum_size.x = 200
 	
-	# Optional overrides
+	# Font, color, size options...
 	if options.has("font"):
 		button.add_theme_font_override("font", options["font"])
 	if options.has("font_color"):
 		button.add_theme_color_override("font_color", options["font_color"])
-	
 	if options.has("size"):
 		button.custom_minimum_size = options["size"]
 	else:
 		button.custom_minimum_size = Vector2(200, 44)  # default fallback
-		
-	if callback.is_valid():
-		button.pressed.connect(callback)
-
-	call_deferred("_add_button_to_content", button)
+	
+	call_deferred("_add_button_to_content", button, callback)
 	return button
 
-func _add_button_to_content(button: Button):
+func _add_button_to_content(button: Button, callback: Callable):
 	if !is_instance_valid(content):
 		push_warning("GUIPanel: Content node not found.")
 		return
+		
 	content.add_child(button)
+	
+	# ✅ Use one signal handler for both sound + user callback
+	button.pressed.connect(func():
+		# Play sound only if it's in tree and valid
+		if button.is_inside_tree() and is_instance_valid(button.sound):
+			await get_tree().process_frame
+			button.sound.play()
+
+		# Then call user's logic
+		if callback.is_valid():
+			callback.call()
+	)
