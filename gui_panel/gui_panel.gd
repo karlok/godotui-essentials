@@ -149,15 +149,15 @@ func add_bar(initial_value := 100, options: Dictionary = {}) -> GUIBar:
 	bar.min_value = 0
 	bar.max_value = 100
 	
-	#if options.has("size"):
-		#bar.custom_minimum_size = options["size"]
-	#else:
-		#bar.custom_minimum_size = Vector2(200, 20)
-#
-	#if options.has("bar_color"):
-		#bar.bar_color = options["bar_color"]
-	#if options.has("background_color"):
-		#bar.background_color = options["background_color"]
+	if options.has("size"):
+		bar.custom_minimum_size = options["size"]
+	else:
+		bar.custom_minimum_size = Vector2(200, 20)
+
+	if options.has("bar_color"):
+		bar.bar_color = options["bar_color"]
+	if options.has("background_color"):
+		bar.background_color = options["background_color"]
 
 	# explicitly set bar style AFTER setting all the vars
 	#bar.set_bar_style(bar.bar_color, bar.background_color)

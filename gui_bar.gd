@@ -9,7 +9,7 @@ func _ready():
 
 	min_value = 0
 	max_value = 100
-	value = 75  # Use less than 100 so we actually *see* the progress fill
+	value = 100  # Use less than 100 so we actually *see* the progress fill
 
 	var bg = StyleBoxFlat.new()
 	bg.bg_color = background_color
@@ -26,5 +26,7 @@ func _ready():
 	# ✅ Here's the trick — use `add_theme_stylebox_override`, NOT `set()`
 	add_theme_stylebox_override("background", bg)
 	add_theme_stylebox_override("fill", fg)  # ✅ Use `"fill"` not `"progress"` in Godot 4.x
+
+	self.clip_contents = true
 
 	print("✅ GUIBar style applied | fill:", fg.bg_color, ", bg:", bg.bg_color)

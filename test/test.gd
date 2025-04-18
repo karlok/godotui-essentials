@@ -52,12 +52,11 @@ func _ready():
 	health_panel.set_background_color(Color.TRANSPARENT)
 	health_panel.panel_size = Vector2(300, 50)
 	$CanvasLayer.add_child(health_panel)
-	#health_panel.add_bar(100, {
-		#"size": Vector2(200, 20),
-		##"bar_color": Color.RED,
-		##"background_color": Color.TRANSPARENT
-	#})
-	health_panel.add_bar(75)
+	health_panel.add_bar(100, {
+		"size": Vector2(200, 20),
+		"bar_color": Color.LIME_GREEN,
+		"background_color": Color.DARK_GRAY
+	})
 	health_panel.fade_in()
 
 func start_game():
