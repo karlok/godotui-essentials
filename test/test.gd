@@ -5,7 +5,8 @@ var font := preload("res://addons/gui_essentials/fonts/Orbitron-Medium.ttf")
 
 # Use _GUIPaths to create a panel
 var panel = _GUIPaths.GUIPanelScene.instantiate()
-var hud_panel = _GUIPaths.GUIPanelScene.instantiate()
+var score_panel = _GUIPaths.GUIPanelScene.instantiate()
+var health_panel = _GUIPaths.GUIPanelScene.instantiate()
 
 func _ready():
 	panel.set_background_color(Color.BLUE_VIOLET) # or define custom color `Color(0.1, 1.0, 0.1, 1.0)`
@@ -35,17 +36,29 @@ func _ready():
 	# show label with effect
 	label.start_type_on_after_ready("Welcome to Godot UI!", 0.05, label.TypeOnMode.CHAR)
 	
-	# create HUD panel
-	hud_panel.placement = GUIPanel.PanelPlacement.TOP_RIGHT
-	hud_panel.set_background_color(Color.TRANSPARENT)
-	hud_panel.panel_size = Vector2(200, 44)
-	$CanvasLayer.add_child(hud_panel)
-	hud_panel.add_label("Score: 0000", {
+	# create HUD panels
+	score_panel.placement = GUIPanel.PanelPlacement.TOP_RIGHT
+	score_panel.set_background_color(Color.TRANSPARENT)
+	score_panel.panel_size = Vector2(300, 50)
+	$CanvasLayer.add_child(score_panel)
+	score_panel.add_label("Score: 0000", {
 		"font": font,
 		"font_color": Color.BLACK,
-		"size": Vector2(300, 40)
+		"size": Vector2(300, 44)
 	})
-	hud_panel.fade_in()
+	score_panel.fade_in()
+	
+	health_panel.placement = GUIPanel.PanelPlacement.TOP_LEFT
+	health_panel.set_background_color(Color.TRANSPARENT)
+	health_panel.panel_size = Vector2(300, 50)
+	$CanvasLayer.add_child(health_panel)
+	#health_panel.add_bar(100, {
+		#"size": Vector2(200, 20),
+		##"bar_color": Color.RED,
+		##"background_color": Color.TRANSPARENT
+	#})
+	health_panel.add_bar(75)
+	health_panel.fade_in()
 
 func start_game():
 	print("Game starting!")

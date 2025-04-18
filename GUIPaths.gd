@@ -6,3 +6,4 @@ class_name _GUIPaths
 const GUIPanelScene = preload("res://addons/gui_essentials/gui_panel/gui_panel.tscn")
 const GUILabelScene := preload("res://addons/gui_essentials/gui_label/gui_label.tscn")
 const GUIButtonScene := preload("res://addons/gui_essentials/gui_button/gui_button.tscn")
+const GUIBarScene := preload("res://addons/gui_essentials/gui_bar.tscn")

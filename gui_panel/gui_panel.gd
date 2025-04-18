@@ -143,6 +143,34 @@ func fade_out(duration := 0.5):
 	tween.tween_callback(hide)
 	
 ### --- add ui elements
+func add_bar(initial_value := 100, options: Dictionary = {}) -> GUIBar:
+	var bar = _GUIPaths.GUIBarScene.instantiate()
+	bar.value = initial_value
+	bar.min_value = 0
+	bar.max_value = 100
+	
+	#if options.has("size"):
+		#bar.custom_minimum_size = options["size"]
+	#else:
+		#bar.custom_minimum_size = Vector2(200, 20)
+#
+	#if options.has("bar_color"):
+		#bar.bar_color = options["bar_color"]
+	#if options.has("background_color"):
+		#bar.background_color = options["background_color"]
+
+	# explicitly set bar style AFTER setting all the vars
+	#bar.set_bar_style(bar.bar_color, bar.background_color)
+
+	call_deferred("_add_bar_to_content", bar)
+	return bar
+
+func _add_bar_to_content(bar: GUIBar):
+	if !is_instance_valid(content):
+		push_warning("GUIPanel: Content node not found!")
+		return
+	content.add_child(bar)
+	
 func add_label(text: String, options: Dictionary = {}) -> Label:
 	var label = _GUIPaths.GUILabelScene.instantiate()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

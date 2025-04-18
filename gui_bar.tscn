@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://byrud8w4far0q"]
+
+[ext_resource type="Script" uid="uid://bmtv3hy4t8qtr" path="res://addons/gui_essentials/gui_bar.gd" id="1_ssui4"]
+
+[node name="GUIBar" type="ProgressBar"]
+offset_right = 4.0
+offset_bottom = 27.0
+script = ExtResource("1_ssui4")
