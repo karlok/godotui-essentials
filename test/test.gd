@@ -73,6 +73,10 @@ func _on_health_timer_timeout():
 	health = max(health - 5, 0)
 	health_bar.value = health
 	update_health_bar_color()
+	
+	if health <= 0:
+		$HealthTimer.stop()  # ⛔ stop timer so it doesn't go negative
+		show_game_over()
 
 func update_health_bar_color():
 	var pct := health / 100.0
@@ -84,3 +88,28 @@ func update_health_bar_color():
 		color = Color(1.0, pct * 2.0, 0.0) # yellow → red
 
 	health_bar.set_fill_color(color)
+
+func show_game_over():
+	var game_over_panel = _GUIPaths.GUIPanelScene.instantiate()
+	game_over_panel.placement = GUIPanel.PanelPlacement.CENTER
+	game_over_panel.set_background_color(Color.BLACK)
+	game_over_panel.set_border_style({ "color": Color.RED, "width": 3, "corner_radius": 8 })
+	game_over_panel.set_size_percentage(0.6, 0.3)
+
+	$CanvasLayer.add_child(game_over_panel)
+
+	game_over_panel.add_label("💀 GAME OVER 💀", {
+		"font": font,
+		"font_color": Color.RED,
+		"size": Vector2(300, 40)
+	})
+	
+	game_over_panel.add_button("Try Again", func():
+		get_tree().reload_current_scene(),
+		{
+			"font": font,
+			"font_color": Color.YELLOW,
+			"size": Vector2(300, 50)
+		})
+
+	game_over_panel.fade_in()
