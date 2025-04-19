@@ -11,13 +11,14 @@ A lightweight and beginner-friendly UI helper addon for Godot 4, designed to qui
 - ✅ Optional fade and slide-in animations
 - ✅ Customizable background and border styles
 - ✅ Health bars with color transitions
-- ✅ Minimal setup — works in code or directly in the editor
+- ✅ Minimal setup — works in code or directly in the Godot Editor Inspector
 
 ## 📦 Installation
 
 1. Copy the `addons/gui_essentials` folder into your project.
 2. In Godot, go to **Project > Project Settings > Plugins** and enable **gui_essentials**.
 3. Add `_GUIPaths.gd` as an autoload singleton for convenient code access.
+4. Note: Make sure you name the singleton exactly _GUIPaths (with underscore) in Project > Autoload, or the example code won’t work.
 
 ## 📚 API Documentation
 
@@ -44,7 +45,12 @@ panel.set_border_style({
     "corner_radius": 12
 })
 
+$CanvasLayer.add_child(panel) # ✅ Must be added to scene to appear! Your scene must contain a `CanvasLayer`
+
 # Add UI elements
+
+These helper methods use call_deferred() to ensure layout safety, so the panel should already be in the scene tree.
+
 var label = panel.add_label("Hello World", {
     "font": custom_font,
     "font_color": Color.SKY_BLUE,
@@ -154,10 +160,13 @@ var health_bar = hud_panel.add_bar(100, {
 func update_health(value: float):
     health_bar.value = value
     var pct = value / 100.0
+    var color = Color.LIME_GREEN
     if pct > 0.5:
-        health_bar.set_fill_color(Color(1.0 - (pct - 0.5) * 2.0, 1.0, 0.0))
+        color = Color(1.0 - (pct - 0.5) * 2.0, 1.0, 0.0) # green → yellow
     else:
-        health_bar.set_fill_color(Color(1.0, pct * 2.0, 0.0))
+        color = Color(1.0, pct * 2.0, 0.0) # yellow → red
+        
+    health_bar.set_fill_color(color)
 ```
 
 ### 3. Dialog Box
@@ -200,6 +209,7 @@ dialog.add_button("Continue", close_dialog)
    - Ensure the value is within min_value and max_value range
    - Check if the bar's size is properly set
    - Verify that the color transition logic is correct
+   - ⚠️ ProgressBar Color Gotcha: Godot’s ProgressBar requires both theme_override_styles/background and theme_override_styles/fill (or progress) to be set to see visible color changes. If your bar appears gray, double-check these styles are set in GUIBar.
 
 5. **Animation Issues**
    - Make sure the panel is properly instantiated before calling animations
