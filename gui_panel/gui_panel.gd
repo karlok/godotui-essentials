@@ -143,6 +143,7 @@ func fade_out(duration := 0.5):
 	tween.tween_callback(hide)
 	
 ### --- add ui elements
+
 func add_bar(initial_value := 100, options: Dictionary = {}) -> GUIBar:
 	var bar = _GUIPaths.GUIBarScene.instantiate()
 	bar.value = initial_value
@@ -224,5 +225,6 @@ func _add_button_to_content(button: Button, callback: Callable):
 
 		# Then call user's logic
 		if callback.is_valid():
+			await get_tree().create_timer(0.1).timeout  # allow sound to start
 			callback.call()
 	)

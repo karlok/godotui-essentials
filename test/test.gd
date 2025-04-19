@@ -49,7 +49,7 @@ func _ready():
 	$CanvasLayer.add_child(score_panel)
 	score_panel.add_label("Score: 0000", {
 		"font": font,
-		"font_color": Color.BLACK,
+		"font_color": Color.LIGHT_BLUE,
 		"size": Vector2(300, 44)
 	})
 	score_panel.fade_in()
@@ -68,6 +68,14 @@ func _ready():
 func start_game():
 	print("Game starting!")
 	panel.fade_out()
+	
+	# reset game state
+	health = 100
+	health_bar.set_value(health)
+	update_health_bar_color()
+	
+	# start the "game loop"
+	$HealthTimer.start()
 
 func _on_health_timer_timeout():
 	health = max(health - 5, 0)

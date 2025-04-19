@@ -8,4 +8,3 @@ script = ExtResource("1_wd4mr")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="HealthTimer" type="Timer" parent="."]
-autostart = true
