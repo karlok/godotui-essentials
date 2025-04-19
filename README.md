@@ -18,7 +18,7 @@ A lightweight and beginner-friendly UI helper addon for Godot 4, designed to qui
 1. Create (or access) the `addons` folder in your Godot project. Copy the `gui_essentials` folder into the `addons` folder.
 2. In Godot, go to **Project > Project Settings > Plugins** and enable **gui_essentials**.
 3. Add `_GUIPaths.gd` as an autoload singleton for convenient code access.
-4. Note: Make sure you name the singleton exactly _GUIPaths (with underscore) in Project > Autoload, or the example code won’t work.
+4. Note: Make sure you name the singleton exactly `_GUIPaths` (with underscore) in Project > Project Settings > Globals > Autoload, or the example code won’t work.
 
 ## 📚 API Documentation
 
